@@ -2,9 +2,6 @@
 //  WriteDirectModeData.swift
 //  SiriTest
 //
-//  Created by 森内　映人 on 2020/03/28.
-//  Copyright © 2020 森内　映人. All rights reserved.
-//
 
 import Foundation
 import CoreBluetooth
