@@ -2,9 +2,6 @@
 //  HubAttatchedIo.swift
 //  Control-Function
 //
-//  Created by xxxx on 2020/04/04.
-//  Copyright © 2020 xxxx. All rights reserved.
-//
 
 import Foundation
 import CoreBluetooth
