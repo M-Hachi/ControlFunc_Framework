@@ -2,10 +2,6 @@
 //  conversion_func.swift
 //  swift02->SiriTest
 //
-//  Created by 森内　映人 on 2019/09/30.
-//  Copyright © 2019 森内　映人. All rights reserved.
-//
-
 import Foundation
 //ddd
 public func InttoInt16(value: Int)->[UInt8]{

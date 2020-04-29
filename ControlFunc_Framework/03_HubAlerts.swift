@@ -12,11 +12,11 @@ public func HubAlerts_Downstream(HubId: Int, AlertType: UInt8, AlertOperation: U
     print("AlertType: ", AlertType)
     let bytes : [UInt8] = [ 0x05, 0x00, 0x03, AlertType, AlertOperation]
     let data = Data(_:bytes)
-    if(connection.Status[HubId]==1){
-        legohub.Peripheral[HubId]!.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withResponse)
-    }else{
-        print("HubActions: No Hub!")
-    }
+//    if(connection.Status[HubId]==1){
+//        legohub.Peripheral[HubId]!.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withResponse)
+//    }else{
+//        print("HubActions: No Hub!")
+//    }
 }
 public func HubAlerts_Upstream( HubId: Int, ReceivedData: [UInt8]){//03
     if(ReceivedData[4]==0x04){//Update

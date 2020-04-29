@@ -26,9 +26,9 @@ func PortModeInformationRequest(HubId: Int, PortId: UInt8, InformationType: UInt
 func PortModeInformationRequest(HubId: Int, PortId: UInt8, Mode: UInt8, InformationType: UInt8){//22
     let bytes : [UInt8] = [ 0x06, 0x00, 0x22, PortId, Mode, InformationType]//request update
     let data = Data(_:bytes)
-    if(connection.Status[HubId]==1){
-        legohub.Peripheral[HubId]!.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withoutResponse)
-    }else{
-        print("PortInformationRequest: No Hub!")
-    }
+//    if(connection.Status[HubId]==1){
+//        legohub.Peripheral[HubId]!.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withoutResponse)
+//    }else{
+//        print("PortInformationRequest: No Hub!")
+//    }
 }

@@ -12,32 +12,32 @@ import CoreBluetooth
 public func SetRgbColorNo(LED_color: Int, No: Int, Port: UInt8, Mode:UInt8) {
     let bytes : [UInt8] = [ 0x08, 0x00, 0x81, Port, 0x11, 0x51, Mode, UInt8(Int16(LED_color)) ]
     let data = Data(_:bytes)
-    if(connection.Status[No]==1){
-        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
-    }else{
-        print("sendLED: no hub!!!")
-    }
+//    if(connection.Status[No]==1){
+//        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
+//    }else{
+//        print("sendLED: no hub!!!")
+//    }
 }
 
 public func SetRgbColors(Red: Int, Green: Int, Blue:Int, No: Int, Port: UInt8, Mode:UInt8) {
     let bytes : [UInt8] = [ 0x08, 0x00, 0x81, Port, 0x11, 0x51, Mode, UInt8(Int16(Red)), UInt8(Int16(Green)), UInt8(Int16(Blue)) ]
     let data = Data(_:bytes)
-    if(connection.Status[No]==1){
-        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
-    }else{
-        print("sendLED: no hub!!!")
-    }
+//    if(connection.Status[No]==1){
+//        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
+//    }else{
+//        print("sendLED: no hub!!!")
+//    }
 }
 
 public func SetIrCommand(No: Int, Port:UInt8, Channel:UInt8, Send:UInt8) {
     let bytes : [UInt8] = [ 0x09, 0x00, 0x81, Port, 0x11, 0x51, 0x07, Send,Channel ]
     let data = Data(_:bytes)
-    if(connection.Status[No]==1){
-        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
-    }else{
-        print("sendIR: no hub!!!")
-        
-    }
+//    if(connection.Status[No]==1){
+//        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
+//    }else{
+//        print("sendIR: no hub!!!")
+//        
+//    }
 }
 
 public func IrCommand_ComboDirect(No: Int, Port:UInt8, CC:String, RED:String, BLUE:String) {
@@ -46,12 +46,12 @@ public func IrCommand_ComboDirect(No: Int, Port:UInt8, CC:String, RED:String, BL
     
     let bytes : [UInt8] = [ 0x09, 0x00, 0x81, Port, 0x11, 0x51, 0x07, Send, Channel ]
     let data = Data(_:bytes)
-    if(connection.Status[No]==1){
-        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
-    }else{
-        print("sendIR: no hub!!!")
-        
-    }
+//    if(connection.Status[No]==1){
+//        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
+//    }else{
+//        print("sendIR: no hub!!!")
+//
+//    }
 }
 
 public func IrCommand_SingleOutput(No: Int, Port:UInt8, CC:String, Mode:String, Output:String, DDDD:String) {
@@ -60,11 +60,11 @@ public func IrCommand_SingleOutput(No: Int, Port:UInt8, CC:String, Mode:String, 
     
     let bytes : [UInt8] = [ 0x09, 0x00, 0x81, Port, 0x11, 0x51, 0x07, Send, Channel ]
     let data = Data(_:bytes)
-    if(connection.Status[No]==1){
-        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
-    }else{
-        print("sendIR: no hub!!!")
-    }
+//    if(connection.Status[No]==1){
+//        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
+//    }else{
+//        print("sendIR: no hub!!!")
+//    }
 }
 
 public func IrCommand_ComboPwm(No: Int, Port:UInt8, CC:String, RED:String, BLUE:String) {
@@ -73,9 +73,9 @@ public func IrCommand_ComboPwm(No: Int, Port:UInt8, CC:String, RED:String, BLUE:
     
     let bytes : [UInt8] = [ 0x09, 0x00, 0x81, Port, 0x11, 0x51, 0x07, Send, Channel ]
     let data = Data(_:bytes)
-    if(connection.Status[No]==1){
-        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
-    }else{
-        print("sendIR: no hub!!!")
-    }
+//    if(connection.Status[No]==1){
+//        legohub.Peripheral[No]!.writeValue(data, for: legohub.Characteristic[No]!, type: .withResponse)
+//    }else{
+//        print("sendIR: no hub!!!")
+//    }
 }
