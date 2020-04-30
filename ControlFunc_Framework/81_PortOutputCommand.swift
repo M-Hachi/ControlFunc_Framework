@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension BLEManager{
+extension BLEManager{//
     public func PortOutputCommand_StartPower(HubId: Int, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Power: Double) {
         var bytes : [UInt8]
         let StartupAndCompletetionInformation: UInt8 = UInt8(StartupInformation*16 + CompletetionInformation)
