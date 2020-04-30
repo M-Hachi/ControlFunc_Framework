@@ -6,7 +6,7 @@
 import Foundation
 import CoreBluetooth
 
-extension BLEManager{
+extension BLEManager{//
     public func HubActions_Downstream(HubId: Int, ActionTypes: UInt8) {//02
         let bytes : [UInt8] = [ 0x04, 0x00, 0x02, ActionTypes]
         let data = Data(_:bytes)
