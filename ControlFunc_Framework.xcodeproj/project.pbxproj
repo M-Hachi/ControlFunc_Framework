@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4E26C698245952DE0096EC70 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E26C697245952DE0096EC70 /* File.swift */; };
 		4EA6771224558B990034F9DC /* 04_HubAttatchedIo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA6771124558B990034F9DC /* 04_HubAttatchedIo.swift */; };
 		4EA6771424558BCE0034F9DC /* 21_PortInformationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA6771324558BCE0034F9DC /* 21_PortInformationRequest.swift */; };
 		4EA6771624558BF40034F9DC /* 42_PortInputFormatSetup(CombinedMode).swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA6771524558BF40034F9DC /* 42_PortInputFormatSetup(CombinedMode).swift */; };
@@ -34,7 +33,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4E26C697245952DE0096EC70 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		4EA6771124558B990034F9DC /* 04_HubAttatchedIo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = 04_HubAttatchedIo.swift; sourceTree = "<group>"; };
 		4EA6771324558BCE0034F9DC /* 21_PortInformationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = 21_PortInformationRequest.swift; sourceTree = "<group>"; };
 		4EA6771524558BF40034F9DC /* 42_PortInputFormatSetup(CombinedMode).swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "42_PortInputFormatSetup(CombinedMode).swift"; sourceTree = "<group>"; };
@@ -93,7 +91,6 @@
 			isa = PBXGroup;
 			children = (
 				4EBA80A824540BAA00FC95C4 /* FindHub.swift */,
-				4E26C697245952DE0096EC70 /* File.swift */,
 				4EBA80C424540F7C00FC95C4 /* Hub_Structs.swift */,
 				4EBA808E2454016000FC95C4 /* conversion_func.swift */,
 				4EBA80AA24540C8400FC95C4 /* custom_func.swift */,
@@ -207,7 +204,6 @@
 				4EBA80C524540F7C00FC95C4 /* Hub_Structs.swift in Sources */,
 				4EBA80A924540BAA00FC95C4 /* FindHub.swift in Sources */,
 				4EBA80B924540E2700FC95C4 /* 22_PortModeInformationRequest.swift in Sources */,
-				4E26C698245952DE0096EC70 /* File.swift in Sources */,
 				4EBA808F2454016000FC95C4 /* conversion_func.swift in Sources */,
 				4EBA80B124540D5700FC95C4 /* 03_HubAlerts.swift in Sources */,
 				4EBA80B524540DBE00FC95C4 /* 41_PortInputFormatSetup(Single).swift in Sources */,

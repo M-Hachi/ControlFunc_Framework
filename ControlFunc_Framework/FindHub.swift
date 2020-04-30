@@ -2,6 +2,7 @@
 //  FindHub.swift
 //  Control-Function
 
+
 import Foundation
 import UIKit
 import CoreBluetooth
@@ -9,35 +10,38 @@ import CoreBluetooth
 public let legohubServiceCBUUID = CBUUID(string: "00001623-1212-EFDE-1623-785FEABCD123")
 public let legohubCharacteristicCBUUID = CBUUID(string: "00001624-1212-EFDE-1623-785FEABCD123")
 
+struct BLEConst {
+    static let MaxHubs = 10
+}
 
-public class HubBLEManager:NSObject{
+public class BLEManager:NSObject{
     public var centralManager : CBCentralManager!
-    //public var bleHandler : FindHub // CBdelegate
-    public var HubStatus = [HubStatusManager](repeating: HubStatusManager(), count: 10)
+    
+    //public var HubStatus = [HubStatusManager](repeating: HubStatusManager(), count: BLEConst.MaxHubs)
+    public var HubStatus = HubStatusManager()
     public var ConnectionStatus = ConnectionStatusManager()
     
     public var AlertController: UIAlertController!
-    //public var Characteristic : CBCharacteristic?
-    //public var Peripheral : CBPeripheral?
-    //public var Identifier : UUID?
-    
-    //public var Button : Bool = false
-    //public var Battery :Int = 0
     
     public static var No = 0
     public static var Status = [Int](repeating: 0/*初期値*/, count: 10/*必要な要素数*/)
     
-    //public var alert: UIAlertController!
+    public func Toggle_On(SwiftView: UIViewController, SwiftSwitch:UISwitch, HubId:Int){
+        self.alert_hub(SwiftView: SwiftView, SwiftSwitch: SwiftSwitch, No: HubId)
+        self.ConnectionStatus.No=HubId
+        print("HubId=\(self.ConnectionStatus.No)")
+        self.centralManager.scanForPeripherals(withServices: [legohubServiceCBUUID])
+    }
+    public func Toggle_Off(SwiftView: UIViewController, SwiftSwitch:UISwitch, HubId:Int){
+        if(self.ConnectionStatus.IsConnected[HubId]){
+            print("Hub\(HubId) turn Off Action")
+            self.HubActions_Downstream(HubId: HubId, ActionTypes: 0x01)
+        }else{
+            print("Error: Switch Toggle Off")
+        }
+    }
     public func alert_hub(SwiftView: UIViewController, SwiftSwitch:UISwitch, No:Int) {
-        //self.bleHandler.AlertController = UIAlertController(title: "Scanning...", message: "Press button on hub.", preferredStyle: .alert)
         self.AlertController = UIAlertController(title: "Scanning...", message: "Press button on hub.", preferredStyle: .alert)
-//        self.bleHandler.AlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:{
-//            (action: UIAlertAction!) -> Void in
-//            //Cancelが押された時の処理
-//            print("Switch turned Off")
-//            SwiftSwitch.setOn(false, animated: true)
-//            self.centralManager.stopScan()
-//        }))
         self.AlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:{
             (action: UIAlertAction!) -> Void in
             //Cancelが押された時の処理
@@ -45,7 +49,6 @@ public class HubBLEManager:NSObject{
             SwiftSwitch.setOn(false, animated: true)
             self.centralManager.stopScan()
         }))
-        //SwiftView.present(self.alert, animated: true, completion: nil)
         SwiftView.present(self.AlertController, animated: true, completion: nil)
     }
     public func closeAlert() {
@@ -53,6 +56,12 @@ public class HubBLEManager:NSObject{
         //self.alert.dismiss(animated: true, completion: nil)
     }
     
+    public func WriteData(HubId: Int, data: Data){
+        if(ConnectionStatus.IsConnected[HubId]){ self.HubStatus.Peripheral[HubId]!.writeValue(data, for: HubStatus.Characteristic[HubId]!, type: .withResponse)
+        }else{
+            print("ERROR: Hub\(HubId) is not connected!")
+        }
+    }
     public override init() {
         super.init()
         self.centralManager=CBCentralManager(delegate: self, queue: nil)
@@ -66,23 +75,26 @@ public class HubBLEManager:NSObject{
 //legohubの中身を配列にする
 //CBCharacteristicの初期値を設定できないのでlegohubを配列にはできない？
 public class HubStatusManager{
-    public var Characteristic : CBCharacteristic?
-    public var Peripheral : CBPeripheral?
-    public var Identifier : UUID?
+    public var Characteristic = [CBCharacteristic?](repeating: nil, count: 10)
+    public var Peripheral = [CBPeripheral?](repeating: nil, count: 10)
+    public var Identifier = [UUID](repeating: UUID(uuidString: "ABC1C06A-1844-4DA8-11C2-298F5C64BE2B")!, count: 10)
+    //public var Characteristic : CBCharacteristic?
+    //public var Peripheral : CBPeripheral?
+    //public var Identifier : UUID?
     
     //public var Status : [Int]
     
     public init() {
-        self.Characteristic = nil
+        
+        /*self.Characteristic = nil
         self.Peripheral = nil
-        self.Identifier = nil
+        self.Identifier = nil*/
     }
     static var Button = [Bool](repeating: false, count: 10)
     static var Battery = [Int](repeating: 0, count: 10)
 }
 
 public class ConnectionStatusManager{
-    
     public var No = 0
     public var IsConnected = [Bool](repeating: false/*初期値*/, count: 10/*必要な要素数*/)
     public init() {
@@ -91,18 +103,7 @@ public class ConnectionStatusManager{
 }
 
 
-extension HubBLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
-    //public var centralManager: CBCentralManager!
-//    public var AlertController: UIAlertController!
-//    public var HubStatus = [HubStatusManager](repeating: HubStatusManager(), count: 10)
-//    public var ConnectionStatus = ConnectionStatusManager()
-//
-    /*public override init () {
-        //HubStatus[0]
-        super.init()
-        //centralManager=CBCentralManager(delegate: self, queue: nil)
-    }*/
-    
+extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
     public func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .unknown:
@@ -134,16 +135,16 @@ extension HubBLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
         //legohub.Peripheral.append(peripheral)
         //legohub.Peripheral.insert(peripheral, at: connection.No)
         
-        HubStatus[ConnectionStatus.No].Peripheral = peripheral
+        HubStatus.Peripheral[ConnectionStatus.No] = peripheral
         //legohub.Peripheral[connection.No] = peripheral
         
         //legohub.Peripheral[connection.No]?.delegate = self //こっちだと数回接続するとなんかエラー出るけど通信はできる
         
         //legohub.Identifier[connection.No] = peripheral.identifier
-        HubStatus[ConnectionStatus.No].Identifier = peripheral.identifier
+        HubStatus.Identifier[ConnectionStatus.No] = peripheral.identifier
         
         //central.connect(legohub.Peripheral[connection.No]!)
-        central.connect(HubStatus[ConnectionStatus.No].Peripheral!)
+        central.connect(HubStatus.Peripheral[ConnectionStatus.No]!)
         
         central.stopScan()
     }
@@ -180,9 +181,9 @@ extension HubBLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
             //legohub.Characteristic.insert(characteristic, at: connection.No )
             
             //legohub.Characteristic[connection.No] = characteristic
-            HubStatus[ConnectionStatus.No].Characteristic = characteristic
+            HubStatus.Characteristic[ConnectionStatus.No] = characteristic
             
-            //print(legohub.Characteristic)
+            print(self.HubStatus)
             //print(legohub.Peripheral)
             //print("connection.No = \(connection.No)")
             
@@ -212,17 +213,13 @@ extension HubBLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
                 _ = characteristicData?.copyBytes(to: &data, count: MemoryLayout<UInt8>.size * size)
                 let Hub:Int
                 switch peripheral.identifier{
-                //case legohub.Identifier[0]:
-                case HubStatus[0].Identifier:
+                case HubStatus.Identifier[0]:
                     Hub = 0
-                //case legohub.Identifier[1]:
-                case HubStatus[1].Identifier:
+                case HubStatus.Identifier[1]:
                     Hub = 1
-                //case legohub.Identifier[2]:
-                case HubStatus[2].Identifier:
+                case HubStatus.Identifier[2]:
                     Hub = 2
-                //case legohub.Identifier[3]:
-                case HubStatus[3].Identifier:
+                case HubStatus.Identifier[3]:
                     Hub = 3
                 default:
                     Hub = -1
@@ -231,6 +228,8 @@ extension HubBLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
                 switch data[2]{
                 case 0x01:
                     HubProperties_Upstream(HubId: Hub, ReceivedData: data)
+                case 0x02:
+                    HubActions_Upstream(HubId: Hub, ReceivedData: data)
                 case 0x03:
                     HubAlerts_Upstream(HubId: Hub, ReceivedData: data)
                 case 0x04:
@@ -257,9 +256,6 @@ extension HubBLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
     }
     
 }
-
-
-
 /*public class BLEManager {
     public var centralManager : CBCentralManager!
     public var bleHandler : FindHub // delegate
