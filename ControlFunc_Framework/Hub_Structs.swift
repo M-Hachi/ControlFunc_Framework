@@ -4,6 +4,8 @@
 //
 
 import Foundation
+/*HubData{
+}*/
 //var DriveHub = [Attitude].self
 /*struct Attitude{
     var yaw: Int = 0
@@ -109,6 +111,7 @@ struct AttatchedHW{
             print("Port\(PortIdA) and Port\(PortIdA) forms Vport\(Port)")
     }
 }
+
 var HubHW = [AttatchedHW](repeating: AttatchedHW(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
 
 struct PortValue{
