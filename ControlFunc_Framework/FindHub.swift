@@ -14,9 +14,6 @@ struct BLEConst {
     static let MaxHubs = 10
 }
 
-//legohubの中身を配列にする
-//CBCharacteristicの初期値を設定できないのでlegohubを配列にはできない？
-
 public class HubConnectionManager{
     public var Characteristic = [CBCharacteristic?](repeating: nil, count: 10)
     public var Peripheral = [CBPeripheral?](repeating: nil, count: 10)
@@ -48,6 +45,15 @@ public class ConnectionStatusManager{
         
     }
 }*/
+//public let BLEHub: Array = [Hub(),Hub(),Hub()]
+public let BLEHub: [Hub] = {
+    var BLEHub = [Hub]()
+    for _ in 0 ..< 5 {
+        BLEHub.append(Hub())
+    }
+    return BLEHub
+}()
+//public let BLEHub: Array = [Hub](repeating: Hub(), count: BLEConst.MaxHubs)
 
 public class BLEManager:NSObject{
     public var centralManager : CBCentralManager!
@@ -58,12 +64,12 @@ public class BLEManager:NSObject{
     //public let HubStatus = HubStatusManager()
     //public var ConnectionStatus = ConnectionStatusManager()
     
-    public let BLEHub = [Hub](repeating: Hub(), count: BLEConst.MaxHubs)
+    //public let BLEHub = [Hub](repeating: Hub(), count: BLEConst.MaxHubs)
     
     public var AlertController: UIAlertController!
     
     //public static var No = 0
-    public static var Status = [Int](repeating: 0/*初期値*/, count: 10/*必要な要素数*/)
+    //public static var Status = [Int](repeating: 0/*初期値*/, count: 10/*必要な要素数*/)
     
     public func Toggle_On(SwiftView: UIViewController, SwiftSwitch:UISwitch, HubId:Int){
         self.alert_hub(SwiftView: SwiftView, SwiftSwitch: SwiftSwitch, No: HubId)
@@ -199,9 +205,7 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
             //ConnectionStatus.IsConnected[ConnectionStatus.No]=true//接続できたことを記録
             BLEStatus.IsConnected[BLEStatus.No]=true//接続できたことを記録
             
-            //DidConnectToHub(HubID:connection.No)
-            
-            //setNotifyValue( true, for: characteristic )
+            self.DidConnectToHub(HubId:BLEStatus.No)
             peripheral.setNotifyValue(true, for: characteristic)
             //HubPropertiesSet(Hub: connection.No, Reference: 0x06, Operation: 0x05)
             //HubPropertiesSet(Hub: connection.No, Reference: 0x06, Operation: 0x02)

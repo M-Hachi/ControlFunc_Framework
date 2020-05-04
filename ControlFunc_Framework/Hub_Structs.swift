@@ -7,7 +7,7 @@ import Foundation
 /*HubData{
 }*/
 
-public class Port{
+public struct Port{
     let PortId: Int = -1
     let Name: String = "PortNameUnknown"
     var InputMode: Int = -1
@@ -15,8 +15,8 @@ public class Port{
     var InformationType: Int = -1
     var DeltaInterval: Int = -1
     var NotificationEnabled: Int = -1
-    var InputValue: Int = 0
-    var OutputValue: Int = 0
+    var InputValue: Double = 0
+    var OutputValue: Double = 0
 }
 
 public class Hub{
@@ -28,7 +28,6 @@ public class Hub{
     public var BatteryVoltage: Int = -1
     
     public init() {
-        self.RSSI = 100
     }
 }
 
