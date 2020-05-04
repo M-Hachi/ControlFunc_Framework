@@ -6,6 +6,32 @@
 import Foundation
 /*HubData{
 }*/
+
+public class Port{
+    let PortId: Int = -1
+    let Name: String = "PortNameUnknown"
+    var InputMode: Int = -1
+    var OutputMode: Int = -1
+    var InformationType: Int = -1
+    var DeltaInterval: Int = -1
+    var NotificationEnabled: Int = -1
+    var InputValue: Int = 0
+    var OutputValue: Int = 0
+}
+
+public class Hub{
+    public var Name: String = "HubNameUnknown"
+    public var AdvName: String = "AdvNameUnknown"
+    public let HubPort = [Port](repeating: Port(), count: 256)
+    public var Button: Bool = false
+    public var RSSI: Int = 0
+    public var BatteryVoltage: Int = -1
+    
+    public init() {
+        self.RSSI = 100
+    }
+}
+
 //var DriveHub = [Attitude].self
 /*struct Attitude{
     var yaw: Int = 0

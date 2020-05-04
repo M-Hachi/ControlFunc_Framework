@@ -20,7 +20,8 @@ extension BLEManager{//
             print("Hub Will Switch Off")
         case 0x31:
             print("Hub Will Disconnect")
-            self.ConnectionStatus.IsConnected[HubId]=false
+            //self.ConnectionStatus.IsConnected[HubId]=false
+            self.BLEStatus.IsConnected[HubId]=false
         case 0x32:
             print("Hub Will Go Into Boot Mode")
             
