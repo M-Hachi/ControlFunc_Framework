@@ -1,3 +1,4 @@
 #  ControlFunc_Framework
 
-use to control hubs.
+Use to communicate with BLE hubs.
+Still in construction
