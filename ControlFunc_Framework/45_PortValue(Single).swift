@@ -182,7 +182,7 @@ func PortValue_Single(HubId: Int, ReceivedData: [UInt8]){//45
             HubAtt[HubId].pitch = Int16toInt(value: [ReceivedData[7],ReceivedData[6]])
             HubAtt[HubId].roll = Int16toInt(value: [ReceivedData[5],ReceivedData[4]])
         }else{//mode==1
-            value = InttoDouble(value: ReceivedData[4])
+            //value = InttoDouble(value: ReceivedData[4])
             print("Hub[\(HubId)] Port[\(ReceivedData[3])] value: \(value)")
         }
     case 0x62:

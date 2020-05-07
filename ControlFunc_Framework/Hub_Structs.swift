@@ -4,9 +4,7 @@
 //
 
 import Foundation
-/*HubData{
-}*/
-
+import CoreBluetooth
 public struct Port{
     let PortId: Int = -1
     let Name: String = "PortNameUnknown"
@@ -19,16 +17,40 @@ public struct Port{
     var OutputValue: Double = 0
 }
 
-public class Hub{
+public struct ManufacturerData{
+    var Length: Int = -1
+    var DataTypeName: Int = -1
+    var ManufacturerId: Int = -1
+    var ButtonState: Int = -1
+    public var SystemTypeAndDeviceNumber :Int = -1
+    //128=100 00000 = Technic Hub
+    //65=010 00001 = Train Hub(HUB NO.4)
+    var DeviceCapabilities: Int = -1
+    var LastNetWork:Int = -1
+    var Status: Int = -1
+    var Option: Int = -1
+}
+
+public class Hub{//portの情報などを保持する
     public var Name: String = "HubNameUnknown"
     public var AdvName: String = "AdvNameUnknown"
+    public var id: Int = -1
+    public var Characteristic: CBCharacteristic?
+    public var Peripheral: CBPeripheral?
+    public var manufacturerdata = ManufacturerData()
+    public var Identifier : UUID?
+    
+    //public var manufacturerdata = ManufacturerData()
+    
+    public var Device: String = "device"
     public let HubPort = [Port](repeating: Port(), count: 256)
+    public var attatchedHw = AttatchedHW(PortA: PuHardware.Nil, PortB: PuHardware.Nil, PortC: PuHardware.Nil, PortD: PuHardware.Nil, PortE: PuHardware.Nil, PortF: PuHardware.Nil)
     public var Button: Bool = false
+    public var FWVersion: Int = -1
+    public var HWVersion: Int = -1
     public var RSSI: Int = 0
     public var BatteryVoltage: Int = -1
-    
-    public init() {
-    }
+    public var BatteryType: Int = -1
 }
 
 //var DriveHub = [Attitude].self
@@ -86,28 +108,29 @@ class Attitude{
 var HubAtt = [Attitude](repeating: Attitude() , count: 10)
 //var HubAtt = [Attitude](repeating: Attitude(yaw: 0, roll:0, pitch:0, yaw_cal:0, roll_cal:0, pitch_cal:0, yaw_slider:0, yaw1: 0) , count: 10)
 
-struct AttatchedHW{
-    var PortA: Int
-    var PortB: Int
-    var PortC: Int
-    var PortD: Int
-    var PortE: Int
-    var PortF: Int
+public struct AttatchedHW{
+    
+    public var PortA: PuHardware
+    public var PortB: PuHardware
+    public var PortC: PuHardware
+    public var PortD: PuHardware
+    public var PortE: PuHardware
+    public var PortF: PuHardware
     
     mutating func DetatchedIo(Port:Int){
         switch Port {
         case 0:
-            self.PortA=0
+            self.PortA=PuHardware.Nil
         case 1:
-            self.PortB=0
+            self.PortB=PuHardware.Nil
         case 2:
-            self.PortC=0
+            self.PortC=PuHardware.Nil
         case 3:
-            self.PortD=0
+            self.PortD=PuHardware.Nil
         case 4:
-            self.PortE=0
+            self.PortE=PuHardware.Nil
         case 5:
-            self.PortF=0
+            self.PortF=PuHardware.Nil
         default:
             print("Error in Port=\(Port)")
         }
@@ -116,17 +139,17 @@ struct AttatchedHW{
     mutating func AttatchedIo(Port:Int, IoTypeId:Int, HardwareRevision:Int, SoftwareRevision:Int){
         switch Port {
         case 0:
-            self.PortA=IoTypeId
+            self.PortA=PuHardware.init(rawValue: IoTypeId)!
         case 1:
-            self.PortB=IoTypeId
+            self.PortB=PuHardware.init(rawValue: IoTypeId)!
         case 2:
-            self.PortC=IoTypeId
+            self.PortC=PuHardware.init(rawValue: IoTypeId)!
         case 3:
-            self.PortD=IoTypeId
+            self.PortD=PuHardware.init(rawValue: IoTypeId)!
         case 4:
-            self.PortE=IoTypeId
+            self.PortE=PuHardware.init(rawValue: IoTypeId)!
         case 5:
-            self.PortF=IoTypeId
+            self.PortF=PuHardware.init(rawValue: IoTypeId)!
         default:
             print("Error in Port=\(Port)")
         }
@@ -137,7 +160,8 @@ struct AttatchedHW{
     }
 }
 
-var HubHW = [AttatchedHW](repeating: AttatchedHW(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
+//var HubHW = [AttatchedHW](repeating: AttatchedHW(PortA: PuHardware.Nil, PortB:PuHardware.Nil, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
+    //var HubHW = [AttatchedHW](repeating: AttatchedHW(PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
 
 struct PortValue{
     var PortA: Double

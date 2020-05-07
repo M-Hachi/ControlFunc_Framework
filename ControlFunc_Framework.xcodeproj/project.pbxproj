@@ -30,6 +30,7 @@
 		4EBA80C124540E9200FC95C4 /* 47_PortInputFormat(Single).swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBA80C024540E9200FC95C4 /* 47_PortInputFormat(Single).swift */; };
 		4EBA80C324540EBA00FC95C4 /* 82_PortOutputCommandFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBA80C224540EBA00FC95C4 /* 82_PortOutputCommandFeedback.swift */; };
 		4EBA80C524540F7C00FC95C4 /* Hub_Structs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBA80C424540F7C00FC95C4 /* Hub_Structs.swift */; };
+		4EE185482461668F0074B63B /* Hub_Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE185472461668F0074B63B /* Hub_Enums.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,7 @@
 		4EBA80C024540E9200FC95C4 /* 47_PortInputFormat(Single).swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "47_PortInputFormat(Single).swift"; sourceTree = "<group>"; };
 		4EBA80C224540EBA00FC95C4 /* 82_PortOutputCommandFeedback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = 82_PortOutputCommandFeedback.swift; sourceTree = "<group>"; };
 		4EBA80C424540F7C00FC95C4 /* Hub_Structs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hub_Structs.swift; sourceTree = "<group>"; };
+		4EE185472461668F0074B63B /* Hub_Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hub_Enums.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 			children = (
 				4EBA80A824540BAA00FC95C4 /* FindHub.swift */,
 				4EBA80C424540F7C00FC95C4 /* Hub_Structs.swift */,
+				4EE185472461668F0074B63B /* Hub_Enums.swift */,
 				4EBA808E2454016000FC95C4 /* conversion_func.swift */,
 				4EBA80AA24540C8400FC95C4 /* custom_func.swift */,
 				4EBA80AE24540D2C00FC95C4 /* 01_HubProperties.swift */,
@@ -199,6 +202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EBA80BD24540E6300FC95C4 /* 44_PortModeInformation.swift in Sources */,
+				4EE185482461668F0074B63B /* Hub_Enums.swift in Sources */,
 				4EA6771C24558C790034F9DC /* 81_PortOutputCommand.swift in Sources */,
 				4EBA80B724540DEB00FC95C4 /* 81_WriteDirectModeData.swift in Sources */,
 				4EBA80C524540F7C00FC95C4 /* Hub_Structs.swift in Sources */,

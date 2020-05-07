@@ -26,56 +26,50 @@ extension BLEManager{
     }
     
     public func HubProperties_Upstream(HubId: Int, ReceivedData: [UInt8]){//01
-            if(ReceivedData[4]==0x06){//Update
-                switch ReceivedData[3]{
-                case 0x01:
-                    print("Advertising Name")
-                case 0x02:
-                    print("Button[2]=\(BLEHub[2].Button)")
-                    print("State: \(ReceivedData[5])")
-                    if(ReceivedData[5]==1){
-                        BLEHub[HubId].Button=true
-                        //legohub.Button[HubId]=true
-                    }else{
-                        BLEHub[HubId].Button=false
-                        //legohub.Button[HubId]=false
-                    }
-                case 0x03:
-                    print("FW Version")
-                case 0x04:
-                    print("HW Version")
-                case 0x05:
-                    print("RSSI")
-        
-                case 0x06:
-                    print("Battery Voltage")
-                    //Battery Voltage
-                    //legohub.Battery[HubId] = Int(ReceivedData[5])
-                    BLEHub[HubId].BatteryVoltage =  Int(ReceivedData[5])
-        
-                case 0x07:
-                    print("Battery Type")
-                case 0x08:
-                    print("Manufacturer Name")
-                case 0x09:
-                    print("Radio Firmware Version")
-                case 0x0A:
-                    print("Lego Wireless Protocol Version")
-                case 0x0B:
-                    print("System Type ID")
-                case 0x0C:
-                    print("H/W Network ID")
-                case 0x0D:
-                    print("Primary MAC Adderss")
-                case 0x0E:
-                    print("Secondary MAC Address")
-                case 0x0F:
-                    print("Hardware Network Family")
-                default:
-                    print("Unknown Property:", ReceivedData[3] )
+        if(ReceivedData[4]==0x06){//Update
+            switch ReceivedData[3]{
+            case 0x01:
+                print("Advertising Name: \(ReceivedData)")
+            case 0x02:
+                print("State: \(ReceivedData[5])")
+                if(ReceivedData[5]==1){
+                    BLEHub[HubId].Button=true
+                }else{
+                    BLEHub[HubId].Button=false
                 }
-            }else{
-                print("Error: HubPropertiesUpstream")
+            case 0x03:
+                print("FW Version")
+            case 0x04:
+                print("HW Version")
+            case 0x05:
+                print("RSSI: \(UInt8toInt(value: ReceivedData[5]))")
+                BLEHub[HubId].RSSI =  UInt8toInt(value: ReceivedData[5])
+            case 0x06:
+                print("Battery Voltage: \(Int(ReceivedData[5]))")
+                BLEHub[HubId].BatteryVoltage =  Int(ReceivedData[5])
+            case 0x07:
+                print("Battery Type")
+            case 0x08:
+                print("Manufacturer Name")
+            case 0x09:
+                print("Radio Firmware Version")
+            case 0x0A:
+                print("Lego Wireless Protocol Version")
+            case 0x0B:
+                print("System Type ID")
+            case 0x0C:
+                print("H/W Network ID")
+            case 0x0D:
+                print("Primary MAC Adderss")
+            case 0x0E:
+                print("Secondary MAC Address")
+            case 0x0F:
+                print("Hardware Network Family")
+            default:
+                print("Unknown Property:", ReceivedData[3] )
             }
+        }else{
+            print("Error: HubPropertiesUpstream")
+        }
     }
 }
