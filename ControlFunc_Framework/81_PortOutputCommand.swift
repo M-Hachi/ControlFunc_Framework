@@ -17,7 +17,7 @@ extension BLEManager{//
         //let port:UInt8=UInt8(PortId.rawValue)
         bytes = [0x08,0x00,0x81,PortId, StartupAndCompletetionInformation,0x51,0x00,DtoUInt8(double: Power)]
         let data = Data(bytes: bytes, count: 8)
-        self.WriteData(HubId: HubId, data: data)
+        //self.WriteData(HubId: HubId, data: data)
         //    legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withResponse)
     }
     
@@ -29,7 +29,7 @@ extension BLEManager{//
         //let port:UInt8=UInt8(PortId.rawValue)
         bytes = [0x08,0x00,0x81,PortId, StartupAndCompletetionInformation,0x51,0x00,DtoUInt8(double: Power)]
         let data = Data(bytes: bytes, count: 8)
-        self.WriteData(HubId: Hub.id, data: data)
+        //self.WriteData(HubId: Hub.id, data: data)
         //    legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withResponse)
     }
     

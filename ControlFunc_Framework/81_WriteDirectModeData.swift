@@ -7,7 +7,7 @@ import Foundation
 //import CoreBluetooth
 extension BLEManager{
     
-    public func SetRgbColorNo(LED_color: Int, HubId: Int, Port: UInt8, Mode:UInt8) {
+    public func SetRgbColorNo(LED_color: Int, hub: Hub, Port: UInt8, Mode:UInt8) {
         let bytes : [UInt8] = [ 0x08, 0x00, 0x81, Port, 0x11, 0x51, Mode, UInt8(Int16(LED_color)) ]
         let data = Data(_:bytes)
         //    if(connection.Status[No]==1){
@@ -15,7 +15,8 @@ extension BLEManager{
         //    }else{
         //        print("sendLED: no hub!!!")
         //    }
-        self.WriteData(HubId: HubId, data: data)
+        //self.WriteData(HubId: HubId, data: data)
+        self.WriteDataToHub(hub: hub, data: data)
     }
     
     public func SetRgbColors(Red: Int, Green: Int, Blue:Int, No: Int, Port: UInt8, Mode:UInt8) {

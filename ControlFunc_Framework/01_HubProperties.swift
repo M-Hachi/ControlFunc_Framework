@@ -21,7 +21,7 @@ extension BLEManager{
     public func HubProperties_Downstream(HubId: Int, HubPropertyReference: UInt8, HubPropertyOperation: UInt8){//01
         let bytes : [UInt8] = [ 0x05, 0x00, 0x01, HubPropertyReference, HubPropertyOperation]//enable
         let data = Data(_:bytes)
-        self.WriteData(HubId: HubId, data: data)
+        //self.WriteData(HubId: HubId, data: data)
         
     }
     

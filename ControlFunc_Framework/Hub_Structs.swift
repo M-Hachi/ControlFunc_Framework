@@ -39,7 +39,7 @@ public class Hub{//portの情報などを保持する
     public var Peripheral: CBPeripheral?
     public var manufacturerdata = ManufacturerData()
     public var Identifier : UUID?
-    
+    public var isconnected: Bool = false
     //public var manufacturerdata = ManufacturerData()
     
     public var Device: String = "device"
