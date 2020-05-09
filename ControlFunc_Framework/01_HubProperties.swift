@@ -18,14 +18,15 @@ import CoreBluetooth
  Payload
  */
 extension BLEManager{
-    public func HubProperties_Downstream(HubId: Int, HubPropertyReference: UInt8, HubPropertyOperation: UInt8){//01
+    public func HubProperties_Downstream(hub: Hub, HubPropertyReference: UInt8, HubPropertyOperation: UInt8){//01
         let bytes : [UInt8] = [ 0x05, 0x00, 0x01, HubPropertyReference, HubPropertyOperation]//enable
         let data = Data(_:bytes)
+        self.WriteDataToHub(hub: hub, data: data)
         //self.WriteData(HubId: HubId, data: data)
         
     }
     
-    public func HubProperties_Upstream(HubId: Int, ReceivedData: [UInt8]){//01
+    public func HubProperties_Upstream(hub: Hub, ReceivedData: [UInt8]){//01
         if(ReceivedData[4]==0x06){//Update
             switch ReceivedData[3]{
             case 0x01:
@@ -33,9 +34,11 @@ extension BLEManager{
             case 0x02:
                 print("State: \(ReceivedData[5])")
                 if(ReceivedData[5]==1){
-                    BLEHub[HubId].Button=true
+                    //BLEHub[HubId].Button=true
+                    hub.Button = true
                 }else{
-                    BLEHub[HubId].Button=false
+                    hub.Button = false
+                    //BLEHub[HubId].Button=false
                 }
             case 0x03:
                 print("FW Version")
@@ -43,10 +46,12 @@ extension BLEManager{
                 print("HW Version")
             case 0x05:
                 print("RSSI: \(UInt8toInt(value: ReceivedData[5]))")
-                BLEHub[HubId].RSSI =  UInt8toInt(value: ReceivedData[5])
+                //BLEHub[HubId].RSSI =  UInt8toInt(value: ReceivedData[5])
+                hub.RSSI = UInt8toInt(value: ReceivedData[5])
             case 0x06:
                 print("Battery Voltage: \(Int(ReceivedData[5]))")
-                BLEHub[HubId].BatteryVoltage =  Int(ReceivedData[5])
+                //BLEHub[HubId].BatteryVoltage =  Int(ReceivedData[5])
+                hub.BatteryVoltage = Int(ReceivedData[5])
             case 0x07:
                 print("Battery Type")
             case 0x08:

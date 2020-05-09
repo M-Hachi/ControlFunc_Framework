@@ -9,7 +9,7 @@
 import Foundation
 
 extension BLEManager{//
-    public func PortOutputCommand_StartPower(HubId: Int, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Power: Double) {
+    /*public func PortOutputCommand_StartPower(HubId: Int, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Power: Double) {
         var bytes : [UInt8]
         let StartupAndCompletetionInformation: UInt8 = UInt8(StartupInformation*16 + CompletetionInformation)
         print("SC:\(StartupAndCompletetionInformation)")
@@ -19,9 +19,9 @@ extension BLEManager{//
         let data = Data(bytes: bytes, count: 8)
         //self.WriteData(HubId: HubId, data: data)
         //    legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withResponse)
-    }
+    }*/
     
-    public func PortOutputCommand_StartPower(Hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Power: Double) {
+    public func PortOutputCommand_StartPower(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Power: Double) {
         var bytes : [UInt8]
         let StartupAndCompletetionInformation: UInt8 = UInt8(StartupInformation*16 + CompletetionInformation)
         print("SC:\(StartupAndCompletetionInformation)")
@@ -29,6 +29,7 @@ extension BLEManager{//
         //let port:UInt8=UInt8(PortId.rawValue)
         bytes = [0x08,0x00,0x81,PortId, StartupAndCompletetionInformation,0x51,0x00,DtoUInt8(double: Power)]
         let data = Data(bytes: bytes, count: 8)
+        self.WriteDataToHub(hub: hub, data: data)
         //self.WriteData(HubId: Hub.id, data: data)
         //    legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withResponse)
     }

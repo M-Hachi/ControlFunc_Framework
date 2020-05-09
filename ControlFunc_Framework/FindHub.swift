@@ -38,26 +38,31 @@ public class HubConnectionManager{
 public class BLEManager:NSObject{
     public var centralManager : CBCentralManager!
     
-    public let BLEStatus = HubConnectionManager()
+    //public let BLEStatus = HubConnectionManager()
     public var AlertController: UIAlertController!
     
     public var BLEHub: [Hub]
+    
+    var HubNo: Int = -1
     //public let Hardware: PuHardware
     //public let Port: PuPort
     
     public func Toggle_On(SwiftView: UIViewController, SwiftSwitch:UISwitch, HubId:Int){
         self.alert_hub(SwiftView: SwiftView, SwiftSwitch: SwiftSwitch, No: HubId)
-        self.BLEStatus.No=HubId
+        //self.BLEStatus.No=HubId
+        self.HubNo = HubId
         //self.ConnectionStatus.No=HubId
         self.centralManager.scanForPeripherals(withServices: [legohubServiceCBUUID])
     }
     
     public func Toggle_Off(SwiftView: UIViewController, SwiftSwitch:UISwitch, HubId:Int){
-        if(self.BLEStatus.IsConnected[HubId]){
+        if(self.BLEHub[HubNo].isconnected){
+            //if(self.BLEStatus.IsConnected[HubId]){
             //if(self.ConnectionStatus.IsConnected[HubId]){
             print("Hub\(HubId) turn Off Action")
             //self.HubActions_Downstream(HubId: HubId, ActionTypes: 0x01)
-            self.BLEStatus.IsConnected[HubId]=false
+            //self.BLEStatus.IsConnected[HubId]=false
+            self.BLEHub[HubNo].isconnected = false
         }else{
             print("Error hub \(HubId): Switch Toggle Off")
         }
@@ -130,14 +135,25 @@ public class BLEManager:NSObject{
         print("status: ", String(status, radix: 2)) //->000D
         let option = UInt8(data[7])
         print("option: ", String(option, radix: 10)) //->000D
-        
     }
     
-    public init(NumberOfHubs: Int) {
-        self.BLEHub = {
+    /*public func appendhub(hub: Hub){
+        BLEHub.append(hub)
+        print("BLEHubs: \(self.BLEHub)")
+    }*/
+    
+    public init(hubs: [Hub]) {
+        /*self.BLEHub = {
             var BLEHub = [Hub]()
             for _ in 0 ..< NumberOfHubs {
-                BLEHub.append(Hub())
+                BLEHub.append(Hub(Name: "NoName"))
+            }
+            return BLEHub
+        }()*/
+        self.BLEHub = {
+            var BLEHub = [Hub]()
+            for i in 0 ..< hubs.count {
+                BLEHub.append(hubs[i])
             }
             return BLEHub
         }()
@@ -179,18 +195,18 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
         print("peripheral identifier is: ",peripheral.identifier)
         
         //BLEHub[BLEStatus.No].Device = self.ReadManufacturerData(data: advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData, hub: BLEHub[BLEStatus.No])
-        self.ReadManufacturerData(data: advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData, hub: BLEHub[BLEStatus.No])
+        self.ReadManufacturerData(data: advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData, hub: BLEHub[self.HubNo])
         
         //BLEStatus.Peripheral[BLEStatus.No] = peripheral
-        self.BLEHub[BLEStatus.No].Peripheral = peripheral
-        self.BLEHub[BLEStatus.No].id = BLEStatus.No
+        self.BLEHub[self.HubNo].Peripheral = peripheral
+        //self.BLEHub[BLEStatus.No].id = BLEStatus.No
         //legohub.Peripheral[connection.No]?.delegate = self //こっちだと数回接続するとなんかエラー出るけど通信はできる
         
         //BLEStatus.Identifier[BLEStatus.No] = peripheral.identifier
-        self.BLEHub[BLEStatus.No].Identifier = peripheral.identifier
+        self.BLEHub[self.HubNo].Identifier = peripheral.identifier
         
         //central.connect(BLEStatus.Peripheral[BLEStatus.No]!)
-        central.connect(self.BLEHub[BLEStatus.No].Peripheral!)
+        central.connect(self.BLEHub[self.HubNo].Peripheral!)
         
         central.stopScan()
     }
@@ -226,12 +242,13 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
             print(characteristic)
             
             //BLEStatus.Characteristic[BLEStatus.No] = characteristic
-            self.BLEHub[BLEStatus.No].Characteristic = characteristic
+            self.BLEHub[self.HubNo].Characteristic = characteristic
             
             //self.BLEStatus.IsConnected[BLEStatus.No]=true//接続できたことを記録
-            self.BLEHub[BLEStatus.No].isconnected=true
+            self.BLEHub[self.HubNo].isconnected=true
             
             //self.DidConnectToHub(HubId:BLEStatus.No)
+            
             peripheral.setNotifyValue(true, for: characteristic)
             //HubPropertiesSet(Hub: connection.No, Reference: 0x06, Operation: 0x05)
             //HubPropertiesSet(Hub: connection.No, Reference: 0x06, Operation: 0x02)
@@ -254,7 +271,7 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
                 
                 while(i<=BLEConst.MaxHubs){
                     //if(peripheral.identifier == BLEStatus.Identifier[i]){
-                    if(peripheral.identifier == BLEHub[BLEStatus.No].Identifier){
+                    if(peripheral.identifier == BLEHub[i].Identifier){
                         Hub=i
                         break
                     }else{
@@ -268,9 +285,9 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
                 
                 switch data[2]{
                 case 0x01:
-                    HubProperties_Upstream(HubId: Hub, ReceivedData: data)
+                    HubProperties_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x02:
-                    HubActions_Upstream(HubId: Hub, ReceivedData: data)
+                    HubActions_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x03:
                     HubAlerts_Upstream(HubId: Hub, ReceivedData: data)
                 case 0x04:

@@ -6,15 +6,16 @@
 import Foundation
 import CoreBluetooth
 public struct Port{
-    let PortId: Int = -1
-    let Name: String = "PortNameUnknown"
-    var InputMode: Int = -1
-    var OutputMode: Int = -1
-    var InformationType: Int = -1
-    var DeltaInterval: Int = -1
-    var NotificationEnabled: Int = -1
-    var InputValue: Double = 0
-    var OutputValue: Double = 0
+    public var PortId: Int = -1
+    public var Name: String = "PortNameUnknown"
+    public var Identifier: String = "WhatIsThis?"
+    public var InputMode: Int = -1
+    public var OutputMode: Int = -1
+    public var InformationType: Int = -1
+    public var DeltaInterval: Int = -1
+    public var NotificationEnabled: Int = -1
+    public var InputValue: Double = 0
+    public var OutputValue: Double = 0
 }
 
 public struct ManufacturerData{
@@ -31,7 +32,7 @@ public struct ManufacturerData{
     var Option: Int = -1
 }
 
-public class Hub{//portの情報などを保持する
+public class Hub: NSObject{//portの情報などを保持する
     public var Name: String = "HubNameUnknown"
     public var AdvName: String = "AdvNameUnknown"
     public var id: Int = -1
@@ -43,7 +44,7 @@ public class Hub{//portの情報などを保持する
     //public var manufacturerdata = ManufacturerData()
     
     public var Device: String = "device"
-    public let HubPort = [Port](repeating: Port(), count: 256)
+    public var HubPort = [Port](repeating: Port(), count: 256)
     public var attatchedHw = AttatchedHW(PortA: PuHardware.Nil, PortB: PuHardware.Nil, PortC: PuHardware.Nil, PortD: PuHardware.Nil, PortE: PuHardware.Nil, PortF: PuHardware.Nil)
     public var Button: Bool = false
     public var FWVersion: Int = -1
@@ -51,6 +52,12 @@ public class Hub{//portの情報などを保持する
     public var RSSI: Int = 0
     public var BatteryVoltage: Int = -1
     public var BatteryType: Int = -1
+    
+    public init(Name: String){
+        self.Name = Name
+        
+        self.HubPort[0].Name = "PortA"
+    }
 }
 
 //var DriveHub = [Attitude].self
