@@ -34,6 +34,12 @@ public class HubConnectionManager{
  }
  return BLEHub
  }()*/
+public protocol BLEManagerDelegate: class {
+    func didConnecttoHub(_ hub: Hub)
+    func didDetatchPort(_ hub: Hub, _ port: HubPort)
+    func didAttatchPort(_ hub: Hub)
+    func didAttatchVirtualPort(_ hub: Hub)
+}
 
 public class BLEManager:NSObject{
     public var centralManager : CBCentralManager!
@@ -243,16 +249,13 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
         for characteristic in characteristics {
             print(characteristic)
             
-            //BLEStatus.Characteristic[BLEStatus.No] = characteristic
             self.BLEHub[self.HubNo].Characteristic = characteristic
             
             //self.BLEStatus.IsConnected[BLEStatus.No]=true//接続できたことを記録
             self.BLEHub[self.HubNo].isconnected=true
-            
-            self.DidConnectToHub(hub: BLEHub[self.HubNo])
-            //self.didConnecttoHub(BLEHub[self.HubNo])
-            
+            self.delegate?.didConnecttoHub(BLEHub[self.HubNo])
             peripheral.setNotifyValue(true, for: characteristic)
+            
             //HubPropertiesSet(Hub: connection.No, Reference: 0x06, Operation: 0x05)
             //HubPropertiesSet(Hub: connection.No, Reference: 0x06, Operation: 0x02)
             //HubProperties_Downstream(HubId: connection.No, HubPropertyReference: 0x06, HubPropertyOperation: 0x02)
@@ -305,9 +308,7 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
                     PortInputFormat_Upstream(hub:self.BLEHub[Hub], ReceivedData: data)
                 case 0x82:
                     PortOutputCommandFeedback_Upstream(hub: self.BLEHub[Hub], data: data)
-                    
                 default:
-                    //print((String(data, radix: 16))
                     print("Unknown Updated value:",data )
                 }
             }

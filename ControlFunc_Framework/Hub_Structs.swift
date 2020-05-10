@@ -1,35 +1,68 @@
 //
 //  Hub_Structs.swift
-//  JoyStick_V4->SiriTest
+//  JoyStick_V4->SiriTest  aaa
 //
 
 import Foundation
 import CoreBluetooth
-public struct Port{
-    public var Id: Int
-    public var Name: String = "PortNameUnknown"
-    //public var Identifier: String = "WhatIsThis?"
-    public var Hardware: PuHardware
-    public var InputMode: Int = -1
-    public var OutputMode: Int = -1
+
+public class PortValue: NSObject{
+   
     public var InformationType: Int = -1
     public var DeltaInterval: Int = -1
     public var NotificationEnabled: Int = -1
     public var InputValue: Double = 0
-    public var OutputValue: Double = 0
     
-    mutating func DetatchedIo(){
+    public var xValue: Double = 0
+    public var yValue: Double = 0
+    public var zValue: Double = 0
+    
+    public var RollValue: Double = 0
+    public var PitchValue: Double = 0
+    public var YawValue: Double = 0
+    
+    public init(Id: Int) {
+    }
+}
+
+
+public class HubPort: NSObject{
+    public var Id: Int = 0
+    public var Name: String = "PortNameUnknown"
+    //public var Identifier: String = "WhatIsThis?"
+    public var Hardware: PuHardware
+    //public var InputMode: Int = -1
+    //public var OutputMode: Int = -1
+    public var InformationType: Int = -1
+    public var DeltaInterval: Int = -1
+    public var NotificationEnabled: Int = -1
+    public var InputValue: Double = 0
+    //public var OutputValue: Double = 0
+    
+    public var xValue: Double = 0
+    public var yValue: Double = 0
+    public var zValue: Double = 0
+    
+    public var RollValue: Double = 0
+    public var PitchValue: Double = 0
+    public var YawValue: Double = 0
+    
+    func DetatchedIo(){
         self.Hardware=PuHardware.Nil
     }
     
     
-    mutating func AttatchedIo(IoTypeId:Int, HardwareRevision:Int, SoftwareRevision:Int){
+    func AttatchedIo(IoTypeId:Int, HardwareRevision:Int, SoftwareRevision:Int){
         print("port[\(self.Id)]: attatched \(IoTypeId)!")
         self.Hardware=PuHardware.init(rawValue: IoTypeId) ?? PuHardware.init(rawValue: -1)!
     }
     
-    mutating func AttatchedVirtualIo(IoTypeId:Int, PortIdA:Int, PortIdB:Int){
+    func AttatchedVirtualIo(IoTypeId:Int, PortIdA:Int, PortIdB:Int){
             print("Port\(PortIdA) and Port\(PortIdA) forms Vport")
+    }
+    public init(Id: Int) {
+        self.Id = Id
+        self.Hardware = PuHardware.Nil
     }
 }
 
@@ -59,7 +92,7 @@ public class Hub: NSObject{//portの情報などを保持する
     //public var manufacturerdata = ManufacturerData()
     
     public var Device: String = "device"
-    public var HubPort : [Port]//(repeating: Port(Hardware: PuHardware.Nil), count: 256)
+    public var Port : [HubPort]//(repeating: Port(Hardware: PuHardware.Nil), count: 256)
     //public var attatchedHw = AttatchedHW(PortA: PuHardware.Nil, PortB: PuHardware.Nil, PortC: PuHardware.Nil, PortD: PuHardware.Nil, PortE: PuHardware.Nil, PortF: PuHardware.Nil)
     public var Button: Bool = false
     public var FWVersion: Int = -1
@@ -68,16 +101,19 @@ public class Hub: NSObject{//portの情報などを保持する
     public var BatteryVoltage: Int = -1
     public var BatteryType: Int = -1
     
+    public var gyro: HubPort
+    
     public init(Name: String){
         self.Name = Name
-        self.HubPort = {
-            var HubPort = [Port]()
+        self.Port = {
+            var Port = [HubPort]()
             for i in 0 ..< 256 {
-                HubPort.append(Port(Id: i, Hardware: PuHardware.Nil))
+                Port.append(HubPort(Id: i))
             }
-            return HubPort
+            return Port
         }()
         //self.HubPort[0].Name = "PortA"
+        self.gyro = self.Port[63]
     }
 }
 

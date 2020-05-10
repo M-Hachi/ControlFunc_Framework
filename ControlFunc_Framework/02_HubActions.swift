@@ -6,13 +6,7 @@
 import Foundation
 import CoreBluetooth
 
-extension BLEManager{//
-    /*public func HubActions_Downstream(HubId: Int, ActionTypes: UInt8) {//02
-        let bytes : [UInt8] = [ 0x04, 0x00, 0x02, ActionTypes]
-        let data = Data(_:bytes)
-        
-        self.WriteData(HubId: HubId, data: data)
-    }*/
+extension BLEManager{
     public func HubActions_Downstream(hub: Hub, ActionTypes: UInt8) {//02
         let bytes : [UInt8] = [ 0x04, 0x00, 0x02, ActionTypes]
         let data = Data(_:bytes)
@@ -26,12 +20,9 @@ extension BLEManager{//
             print("Hub Will Switch Off")
         case 0x31:
             print("Hub Will Disconnect")
-            //self.ConnectionStatus.IsConnected[HubId]=false
-            //self.BLEStatus.IsConnected[HubId]=false
             hub.isconnected = false
         case 0x32:
             print("Hub Will Go Into Boot Mode")
-            
         default:
             print("Unknown Property:", ReceivedData[3] )
         }

@@ -22,8 +22,6 @@ extension BLEManager{
         let bytes : [UInt8] = [ 0x05, 0x00, 0x01, HubPropertyReference, HubPropertyOperation]//enable
         let data = Data(_:bytes)
         self.WriteDataToHub(hub: hub, data: data)
-        //self.WriteData(HubId: HubId, data: data)
-        
     }
     
     public func HubProperties_Upstream(hub: Hub, ReceivedData: [UInt8]){//01
