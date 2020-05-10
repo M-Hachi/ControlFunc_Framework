@@ -8,8 +8,10 @@
 
 import Foundation
 import CoreBluetooth
-
-func GenericErrorMessages_Upstream(HubId: Int, data: [UInt8]){//05//aabbcc
-    //String( value[3], radix: 16)
-    print("Error:CommandType:\(data[3]), ErrorCode:\(data[4])")
+extension BLEManager{
+    
+    func GenericErrorMessages_Upstream(hub: Hub, data: [UInt8]){//05//aabbcc
+        //String( value[3], radix: 16)
+        print("Error:CommandType:\(data[3]), ErrorCode:\(data[4])")
+    }
 }

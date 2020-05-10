@@ -6,9 +6,10 @@
 import Foundation
 import CoreBluetooth
 public struct Port{
-    public var PortId: Int = -1
+    public var Id: Int
     public var Name: String = "PortNameUnknown"
-    public var Identifier: String = "WhatIsThis?"
+    //public var Identifier: String = "WhatIsThis?"
+    public var Hardware: PuHardware
     public var InputMode: Int = -1
     public var OutputMode: Int = -1
     public var InformationType: Int = -1
@@ -16,6 +17,20 @@ public struct Port{
     public var NotificationEnabled: Int = -1
     public var InputValue: Double = 0
     public var OutputValue: Double = 0
+    
+    mutating func DetatchedIo(){
+        self.Hardware=PuHardware.Nil
+    }
+    
+    
+    mutating func AttatchedIo(IoTypeId:Int, HardwareRevision:Int, SoftwareRevision:Int){
+        print("port[\(self.Id)]: attatched \(IoTypeId)!")
+        self.Hardware=PuHardware.init(rawValue: IoTypeId) ?? PuHardware.init(rawValue: -1)!
+    }
+    
+    mutating func AttatchedVirtualIo(IoTypeId:Int, PortIdA:Int, PortIdB:Int){
+            print("Port\(PortIdA) and Port\(PortIdA) forms Vport")
+    }
 }
 
 public struct ManufacturerData{
@@ -44,8 +59,8 @@ public class Hub: NSObject{//portの情報などを保持する
     //public var manufacturerdata = ManufacturerData()
     
     public var Device: String = "device"
-    public var HubPort = [Port](repeating: Port(), count: 256)
-    public var attatchedHw = AttatchedHW(PortA: PuHardware.Nil, PortB: PuHardware.Nil, PortC: PuHardware.Nil, PortD: PuHardware.Nil, PortE: PuHardware.Nil, PortF: PuHardware.Nil)
+    public var HubPort : [Port]//(repeating: Port(Hardware: PuHardware.Nil), count: 256)
+    //public var attatchedHw = AttatchedHW(PortA: PuHardware.Nil, PortB: PuHardware.Nil, PortC: PuHardware.Nil, PortD: PuHardware.Nil, PortE: PuHardware.Nil, PortF: PuHardware.Nil)
     public var Button: Bool = false
     public var FWVersion: Int = -1
     public var HWVersion: Int = -1
@@ -55,8 +70,14 @@ public class Hub: NSObject{//portの情報などを保持する
     
     public init(Name: String){
         self.Name = Name
-        
-        self.HubPort[0].Name = "PortA"
+        self.HubPort = {
+            var HubPort = [Port]()
+            for i in 0 ..< 256 {
+                HubPort.append(Port(Id: i, Hardware: PuHardware.Nil))
+            }
+            return HubPort
+        }()
+        //self.HubPort[0].Name = "PortA"
     }
 }
 
@@ -114,7 +135,7 @@ class Attitude{
 }
 var HubAtt = [Attitude](repeating: Attitude() , count: 10)
 //var HubAtt = [Attitude](repeating: Attitude(yaw: 0, roll:0, pitch:0, yaw_cal:0, roll_cal:0, pitch_cal:0, yaw_slider:0, yaw1: 0) , count: 10)
-
+/*
 public struct AttatchedHW{
     
     public var PortA: PuHardware
@@ -165,11 +186,11 @@ public struct AttatchedHW{
     mutating func AttatchedVirtualIo(Port:Int, IoTypeId:Int, PortIdA:Int, PortIdB:Int){
             print("Port\(PortIdA) and Port\(PortIdA) forms Vport\(Port)")
     }
-}
+}*/
 
 //var HubHW = [AttatchedHW](repeating: AttatchedHW(PortA: PuHardware.Nil, PortB:PuHardware.Nil, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
     //var HubHW = [AttatchedHW](repeating: AttatchedHW(PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
-
+/*
 struct PortValue{
     var PortA: Double
     var PortB: Double
@@ -179,7 +200,7 @@ struct PortValue{
     var PortF: Double
 }
 var HubPorts = [PortValue](repeating: PortValue(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
-
+*/
 
 struct PortTimer{
     var PortA = Timer()
@@ -201,7 +222,7 @@ struct DegreesCal{//最大値・最小値・零点設定用
     var ZeroSet: Bool
     var Move: Bool
 }
-
+/*
 struct ArmHub{
     static var hatch = [Double](repeating: 0, count: 100)//PortA
     static var hatchCal = DegreesCal(Max: 0, Min: 0, Zero: 0, MaxSet: false, MinSet: false, ZeroSet: false, Move: false)
@@ -224,4 +245,4 @@ struct ArmHub{
     static var Gesture_Tolerance=[Double](repeating: 0.5, count: 5)
     static var userDefaults = UserDefaults.standard
 }
-
+*/

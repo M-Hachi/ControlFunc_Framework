@@ -9,9 +9,9 @@
 import Foundation
 
 
-func PortOutputCommandFeedback_Upstream( HubID: Int, data: [UInt8]){//82
+func PortOutputCommandFeedback_Upstream(hub: Hub, data: [UInt8]){//82
     if(data[4]==10){
-        //print("Hub[\(HubID)] Port[\(data[3])] is Busy/Full")
+        print("Hub[\(hub.Name)] Port[\(data[3])] is Busy/Full")
         //connection.Buffer[HubID][Int(data[3])] = 0x10
     }
 }

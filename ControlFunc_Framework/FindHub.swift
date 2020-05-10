@@ -41,6 +41,7 @@ public class BLEManager:NSObject{
     //public let BLEStatus = HubConnectionManager()
     public var AlertController: UIAlertController!
     
+    public var delegate: BLEManagerDelegate?
     public var BLEHub: [Hub]
     
     var HubNo: Int = -1
@@ -55,16 +56,16 @@ public class BLEManager:NSObject{
         self.centralManager.scanForPeripherals(withServices: [legohubServiceCBUUID])
     }
     
-    public func Toggle_Off(SwiftView: UIViewController, SwiftSwitch:UISwitch, HubId:Int){
-        if(self.BLEHub[HubNo].isconnected){
+    public func Toggle_Off(SwiftView: UIViewController, SwiftSwitch:UISwitch, hub:Hub){
+        if(hub.isconnected){
             //if(self.BLEStatus.IsConnected[HubId]){
             //if(self.ConnectionStatus.IsConnected[HubId]){
-            print("Hub\(HubId) turn Off Action")
-            //self.HubActions_Downstream(HubId: HubId, ActionTypes: 0x01)
+            print("Hub\(hub.id) turn Off Action")
+            self.HubActions_Downstream(hub: hub, ActionTypes: 0x01)
             //self.BLEStatus.IsConnected[HubId]=false
             self.BLEHub[HubNo].isconnected = false
         }else{
-            print("Error hub \(HubId): Switch Toggle Off")
+            print("Error hub \(hub.id): Switch Toggle Off")
         }
         
     }
@@ -154,6 +155,7 @@ public class BLEManager:NSObject{
             var BLEHub = [Hub]()
             for i in 0 ..< hubs.count {
                 BLEHub.append(hubs[i])
+                hubs[i].id = i
             }
             return BLEHub
         }()
@@ -247,7 +249,8 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
             //self.BLEStatus.IsConnected[BLEStatus.No]=true//接続できたことを記録
             self.BLEHub[self.HubNo].isconnected=true
             
-            //self.DidConnectToHub(HubId:BLEStatus.No)
+            self.DidConnectToHub(hub: BLEHub[self.HubNo])
+            //self.didConnecttoHub(BLEHub[self.HubNo])
             
             peripheral.setNotifyValue(true, for: characteristic)
             //HubPropertiesSet(Hub: connection.No, Reference: 0x06, Operation: 0x05)
@@ -289,19 +292,19 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
                 case 0x02:
                     HubActions_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x03:
-                    HubAlerts_Upstream(HubId: Hub, ReceivedData: data)
+                    HubAlerts_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x04:
-                    HubAttatchedIo_Upstream(HubId: Hub, ReceivedData: data)
+                    HubAttatchedIo_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x05:
-                    GenericErrorMessages_Upstream(HubId: Hub, data: data)
+                    GenericErrorMessages_Upstream(hub: self.BLEHub[Hub], data: data)
                 case 0x44:
-                    PortModeInformation_Upstream(HubId: Hub, ReceivedData: data)
+                    PortModeInformation_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x45:
-                    PortValue_Single(HubId: Hub, ReceivedData: data)
+                    PortValue_Single(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x47:
-                    PortInputFormat_Upstream(HubId: Hub, ReceivedData: data)
+                    PortInputFormat_Upstream(hub:self.BLEHub[Hub], ReceivedData: data)
                 case 0x82:
-                    PortOutputCommandFeedback_Upstream(HubID: Hub, data: data)
+                    PortOutputCommandFeedback_Upstream(hub: self.BLEHub[Hub], data: data)
                     
                 default:
                     //print((String(data, radix: 16))
