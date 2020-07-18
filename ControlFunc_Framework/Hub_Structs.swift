@@ -1,17 +1,18 @@
 //
 //  Hub_Structs.swift
-//  JoyStick_V4->SiriTest  aaa
+//  JoyStick_V4->SiriTest
 //
 
 import Foundation
 import CoreBluetooth
 
 public class PortValue: NSObject{
-   
+    public var Id:Int
     public var InformationType: Int = -1
     public var DeltaInterval: Int = -1
     public var NotificationEnabled: Int = -1
-    public var InputValue: Double = 0
+    
+    public var ScalarValue: Double = 0
     
     public var xValue: Double = 0
     public var yValue: Double = 0
@@ -22,6 +23,7 @@ public class PortValue: NSObject{
     public var YawValue: Double = 0
     
     public init(Id: Int) {
+        self.Id = Id
     }
 }
 
@@ -31,9 +33,9 @@ public class HubPort: NSObject{
     public var Name: String = "PortNameUnknown"
     //public var Identifier: String = "WhatIsThis?"
     public var Hardware: PuHardware
-    //public var InputMode: Int = -1
-    //public var OutputMode: Int = -1
-    public var InformationType: Int = -1
+    public var Mode: Int = 0
+    public var Value: [PortValue]
+    /*public var InformationType: Int = -1
     public var DeltaInterval: Int = -1
     public var NotificationEnabled: Int = -1
     public var InputValue: Double = 0
@@ -45,7 +47,7 @@ public class HubPort: NSObject{
     
     public var RollValue: Double = 0
     public var PitchValue: Double = 0
-    public var YawValue: Double = 0
+    public var YawValue: Double = 0*/
     
     func DetatchedIo(){
         self.Hardware=PuHardware.Nil
@@ -63,6 +65,13 @@ public class HubPort: NSObject{
     public init(Id: Int) {
         self.Id = Id
         self.Hardware = PuHardware.Nil
+        self.Value = {
+            var value = [PortValue]()
+            for Mode in 0 ..< 10 {
+                value.append(PortValue(Id: Mode))
+            }
+            return value
+        }()
     }
 }
 

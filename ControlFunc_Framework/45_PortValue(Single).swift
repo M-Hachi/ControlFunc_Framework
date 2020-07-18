@@ -17,7 +17,8 @@ extension BLEManager{
         switch ReceivedData[3]{
         case 0x00:
             //HubPorts[HubId].PortA = datatoDouble(data: ReceivedData)[0]
-            hub.Port[0].InputValue = datatoDouble(data: ReceivedData)[0]
+            //hub.Port[0].InputValue = datatoDouble(data: ReceivedData)[0]
+            hub.Port[0].Value[hub.Port[0].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
         /*case 0x01:
             HubPorts[HubId].PortB = datatoDouble(data: ReceivedData)[0]
         case 0x02:

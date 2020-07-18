@@ -13,5 +13,6 @@ extension BLEManager{
         let bytes: [UInt8] = [0x0A, 0x00, 0x41, PortId, Mode,DIntervalArray[0],DIntervalArray[1],DIntervalArray[2],DIntervalArray[3], NotificationEnabled]
         let data = Data(_:bytes)
         self.WriteDataToHub(hub: hub, data: data)
+        hub.Port[Int(PortId)].Mode = Int(Mode)
     }
 }

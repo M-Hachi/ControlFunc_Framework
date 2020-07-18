@@ -150,13 +150,6 @@ public class BLEManager:NSObject{
     }*/
     
     public init(hubs: [Hub]) {
-        /*self.BLEHub = {
-            var BLEHub = [Hub]()
-            for _ in 0 ..< NumberOfHubs {
-                BLEHub.append(Hub(Name: "NoName"))
-            }
-            return BLEHub
-        }()*/
         self.BLEHub = {
             var BLEHub = [Hub]()
             for i in 0 ..< hubs.count {
