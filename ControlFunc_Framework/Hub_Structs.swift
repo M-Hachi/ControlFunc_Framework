@@ -5,6 +5,7 @@
 
 import Foundation
 import CoreBluetooth
+import UIKit
 
 public class PortValue: NSObject{
     public var Id:Int
@@ -27,6 +28,150 @@ public class PortValue: NSObject{
     }
 }
 
+
+public class HatchManager: NSObject{
+    public let blemanager: BLEManager
+    public let hub: Hub
+    public let PortId: UInt8
+    public var intervalpoint: [Double]
+    public var max: Double = 0
+    public var min: Double = 0
+    public var range: Double = 0
+    
+    public var Alert: UIAlertController?
+    
+    public var maxpower = 0
+    var maxSet: Bool = false
+    var minSet: Bool = false
+    var move : Bool = false
+    
+    var value_now: Double = 0
+    var value_past: Double = 0
+    
+    var SetRangeTimer: Timer?
+    var EndTimer: Timer?
+    
+    var SendValueTimer: Timer?
+    public var Value: Double = 0.0
+    
+    public func StartTimer(View: UIViewController){
+        print("StartTimer")
+        
+        alert(View: View)
+        
+        blemanager.PortInputFormatSetup_Single(hub: hub, PortId: PortId, Mode: 0x02, DeltaInterval: 2, NotificationEnabled: 0x01)
+        
+        guard SetRangeTimer == nil else { return }
+        self.SetRangeTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(SetRange), userInfo: nil, repeats: true)
+    }
+    
+    public func SetIntervalPoints(){
+        self.range = max - min
+        let interval = range/Double(self.intervalpoint.count+1)
+        for i in 0 ..< intervalpoint.count {
+            intervalpoint[i] = min + interval*Double(i+1)
+        }
+        print("max = \(self.max)")
+        print("min = \(self.min)")
+        print("interval[0]= \(self.intervalpoint[0])")
+    }
+    
+    
+    func alert(View: UIViewController){
+        self.Alert = UIAlertController(title: "Servo Motor", message: "Setting Range...", preferredStyle: .alert)
+        self.Alert!.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:{
+            (action: UIAlertAction!) -> Void in
+            self.Dump()
+        }))
+        
+        View.present(Alert!, animated: true, completion: nil)
+
+    }
+    
+    @objc func SetRange(){
+        print("setrange")
+        
+        if(self.maxSet == false && self.move == false){
+            //self.move = true
+            print("setting MAX...")
+            self.blemanager.PortOutputCommand_StartSpeed(hub: hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Speed: 30, MaxPower: UInt8(self.maxpower), UseProfile: 0x00)
+        }else if(self.minSet == false && self.move == false){
+            print("setting MIN...")
+            //self.move = true
+            self.blemanager.PortOutputCommand_StartSpeed(hub: hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Speed: -30, MaxPower: UInt8(self.maxpower), UseProfile: 0x00)
+        }else if(self.minSet == true && self.maxSet == true){
+            print("Hatch set complete\tMin:\(self.min), Max:\(self.max)")
+            self.SetIntervalPoints()
+            self.blemanager.PortOutputCommand_GotoAbsolutePosition(hub: hub, PortId: PortId, StartupInformation: 0, CompletetionInformation: 0, AbsPos: self.intervalpoint[0], Speed: 100, MaxPower: 100, EndState: 0x7e, UseProfile: 0x00)
+            
+            EndTimer = Timer.scheduledTimer(timeInterval:1, target: self, selector: #selector(StopTimer), userInfo: nil, repeats: false)
+            //EndTimerIsOn = true
+            Alert!.dismiss(animated: true, completion: nil)
+            self.SetRangeTimer!.invalidate()
+            //SendValueTimer = Timer.scheduledTimer(timeInterval:0.2, target: self, selector: #selector(SendValue), userInfo: nil, repeats: true)
+        }
+        SetRangeRefresher(hub: self.hub, PortId: self.PortId)
+    }
+    
+    @objc func StopTimer(){
+        self.blemanager.PortOutputCommand_StartPower(hub: self.hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Power: 0)
+    }
+    
+    public func SetRangeRefresher(hub: Hub, PortId: UInt8){
+        value_now = Double(hub.Port[Int(PortId)].Value[2].ScalarValue)
+        print("value_now= \(value_now)")
+        
+        if(value_now < value_past && value_now < self.min){
+            print("update min")
+            self.min = value_now
+            self.move=true
+        }else if(value_now > value_past && value_now > self.max){
+            print("update max")
+            self.max = value_now
+            self.move=true
+        //}else if(abs(value_past-value_now)<2 && abs(value_now-self.min)<2 && self.move==true){
+        }else if(value_now-value_past > -2 && abs(value_now-self.min)<2 && self.move==true){
+            print("minset = true")
+            self.minSet = true
+            self.move = false
+        }else if(abs(value_past-value_now)<2 && abs(value_now-self.max)<2 && self.move==true){
+            print("maxset = true")
+            self.maxSet = true
+            self.move = false
+        }
+        value_past=value_now
+    }
+    
+    @objc func SendValue(){
+        print("Value = \(Value)")
+        blemanager.PortOutputCommand_GotoAbsolutePosition(hub: self.hub, PortId: 2, StartupInformation: 0b0001, CompletetionInformation: 0, AbsPos: Value, Speed: 70, MaxPower: 100, EndState: 0x7e, UseProfile: 0x11)
+        
+    }
+    
+    public func Dump(){
+        self.SetRangeTimer!.invalidate()
+        self.EndTimer?.invalidate()
+        self.maxSet = false
+        self.minSet = false
+        self.move = false
+        self.blemanager.PortOutputCommand_StartPower(hub: self.hub, PortId: self.PortId, StartupInformation: 0b0001, CompletetionInformation: 0, Power: 0)
+    
+    }
+    
+    public init(blemanager: BLEManager, hub: Hub, PortId: UInt8, intervals: Int, maxpower: Int) {
+        self.blemanager = blemanager
+        self.hub = hub
+        self.PortId = PortId
+        self.maxpower = maxpower
+        self.intervalpoint = {
+            var value = [Double]()
+            for _ in 0 ..< intervals {
+                value.append(0.00)
+            }
+            return value
+        }()
+    }
+}
 
 public class HubPort: NSObject{
     public var Id: Int = 0

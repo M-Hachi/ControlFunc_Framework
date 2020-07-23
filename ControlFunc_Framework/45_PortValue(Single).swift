@@ -19,7 +19,14 @@ extension BLEManager{
             //HubPorts[HubId].PortA = datatoDouble(data: ReceivedData)[0]
             //hub.Port[0].InputValue = datatoDouble(data: ReceivedData)[0]
             hub.Port[0].Value[hub.Port[0].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
-        /*case 0x01:
+        case 0x01:
+            hub.Port[1].Value[hub.Port[1].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
+        case 0x02:
+            hub.Port[2].Value[hub.Port[2].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
+        case 0x03:
+            hub.Port[3].Value[hub.Port[3].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
+            
+            /*case 0x01:
             HubPorts[HubId].PortB = datatoDouble(data: ReceivedData)[0]
         case 0x02:
             HubPorts[HubId].PortC = datatoDouble(data: ReceivedData)[0]

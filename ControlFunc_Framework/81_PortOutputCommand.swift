@@ -55,7 +55,7 @@ extension BLEManager{//
     }
     
     
-    public func PortOutputCommand_StartSpeed(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Speed:Double, MaxPower:UInt8, UseProfie:UInt8) {//0x07
+    public func PortOutputCommand_StartSpeed(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Speed:Double, MaxPower:UInt8, UseProfile:UInt8) {//0x07
         var bytes : [UInt8]
         let StartupAndCompletetionInformation: UInt8 = UInt8(StartupInformation*16 + CompletetionInformation)
         var SpeedOut :Double
@@ -66,29 +66,29 @@ extension BLEManager{//
             SpeedOut = Speed
         }
         
-        bytes = [0x09,0x00,0x81,PortId, StartupAndCompletetionInformation,0x07,DtoUInt8(double: SpeedOut),MaxPower, UseProfie ]
+        bytes = [0x09,0x00,0x81,PortId, StartupAndCompletetionInformation,0x07,DtoUInt8(double: SpeedOut),MaxPower, UseProfile ]
         
         let data = Data(bytes: bytes, count: 9)
         self.WriteDataToHub(hub: hub, data: data)
         //legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withoutResponse)
     }
     
-    public func PortOutputCommand_StartSpeedForDegrees(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Degrees:Double, Speed:Double, MaxPower:UInt8, EndState:UInt8, UseProfie:UInt8) {//0x0B = 11
+    public func PortOutputCommand_StartSpeedForDegrees(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Degrees:Double, Speed:Double, MaxPower:UInt8, EndState:UInt8, UseProfile:UInt8) {//0x0B = 11
         var bytes : [UInt8]
         let StartupAndCompletetionInformation: UInt8 = UInt8(StartupInformation*16 + CompletetionInformation)
         let AbsPosArray = DtoInt32(double: Degrees)
         print("deg:\(Degrees)")
-        bytes = [0x0e,0x00,0x81,PortId, StartupAndCompletetionInformation,0x0B,AbsPosArray[0],AbsPosArray[1], AbsPosArray[2],AbsPosArray[3],DtoUInt8(double: Speed),MaxPower, EndState,UseProfie ]
+        bytes = [0x0e,0x00,0x81,PortId, StartupAndCompletetionInformation,0x0B,AbsPosArray[0],AbsPosArray[1], AbsPosArray[2],AbsPosArray[3],DtoUInt8(double: Speed),MaxPower, EndState,UseProfile ]
         let data = Data(bytes: bytes, count: 14)
         self.WriteDataToHub(hub: hub, data: data)
         //legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withoutResponse)
     }
     
-    public func PortOutputCommand_GotoAbsolutePosition(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, AbsPos:Double, Speed:UInt8, MaxPower:UInt8, EndState:UInt8, UseProfie:UInt8) {//0x0D
+    public func PortOutputCommand_GotoAbsolutePosition(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, AbsPos:Double, Speed:UInt8, MaxPower:UInt8, EndState:UInt8, UseProfile:UInt8) {//0x0D
         var bytes : [UInt8]
         let StartupAndCompletetionInformation: UInt8 = UInt8(StartupInformation*16 + CompletetionInformation)
         let AbsPosArray = DtoInt32(double: AbsPos)
-        bytes = [0x0e,0x00,0x81,PortId, StartupAndCompletetionInformation,0x0D,AbsPosArray[0],AbsPosArray[1], AbsPosArray[2],AbsPosArray[3],Speed,MaxPower, EndState,UseProfie ]
+        bytes = [0x0e,0x00,0x81,PortId, StartupAndCompletetionInformation,0x0D,AbsPosArray[0],AbsPosArray[1], AbsPosArray[2],AbsPosArray[3],Speed,MaxPower, EndState,UseProfile ]
         let data = Data(bytes: bytes, count: 14)
         self.WriteDataToHub(hub: hub, data: data)
         //legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withoutResponse)

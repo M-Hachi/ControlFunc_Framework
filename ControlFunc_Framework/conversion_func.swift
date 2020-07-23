@@ -86,10 +86,13 @@ public func DtoInt32(double: Double)->[UInt8]{
 public func Int16toInt(value: [UInt8])->Int{
     let str0 = String( value[0], radix: 16)
     let str1 = String( value[1], radix: 16)
-    print("0:\(str0), 1:\(str1)")
+    //print("0:\(str0), 1:\(str1)")
+    
     //let int = str0 + str1
     let int = str1 + str0
-    print("int16toInt: \(int)")
+    
+    //print("int16toInt: \(int)")
+    
     let raw : Int = Int(int, radix: 16)!
     var out : Int = 0
     if(raw > 32678){
