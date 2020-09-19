@@ -24,7 +24,7 @@ extension BLEManager{
      }*/
     
     
-    func PortModeInformationRequest(hub: Hub, PortId: UInt8, Mode: UInt8, InformationType: UInt8){//22
+    public func PortModeInformationRequest(hub: Hub, PortId: UInt8, Mode: UInt8, InformationType: UInt8){//22
         let bytes : [UInt8] = [ 0x06, 0x00, 0x22, PortId, Mode, InformationType]//request update
         let data = Data(_:bytes)
         self.WriteDataToHub(hub: hub, data: data)

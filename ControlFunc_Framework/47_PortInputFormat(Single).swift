@@ -11,7 +11,7 @@ import Foundation
 import CoreBluetooth
 
 extension BLEManager{
-    func PortInputFormat_Upstream(hub: Hub, ReceivedData: [UInt8]){//47
+    public func PortInputFormat_Upstream(hub: Hub, ReceivedData: [UInt8]){//47
         let Port :Int = Int(ReceivedData[3])
         let Mode :Int = Int(ReceivedData[4])
         let DeltaInterval :Int = Int32toInt(value: [ReceivedData[8],ReceivedData[7],ReceivedData[6],ReceivedData[5]])

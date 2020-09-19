@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 
 extension BLEManager{
-    func PortModeInformation_Upstream(hub: Hub, ReceivedData: [UInt8]){//44
+    public func PortModeInformation_Upstream(hub: Hub, ReceivedData: [UInt8]){//44
         let InformationType: Int = Int(ReceivedData[5])
         
         var max = 0

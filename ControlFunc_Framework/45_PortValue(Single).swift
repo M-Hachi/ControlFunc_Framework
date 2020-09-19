@@ -14,23 +14,42 @@ extension BLEManager{
     func PortValue_Single(hub:Hub, ReceivedData: [UInt8]){//45
         var value: Double = 0.0
         //print("ReceivedData:\(ReceivedData)")
-        switch ReceivedData[3]{
+        switch ReceivedData[3]{//Port
         case 0x00:
-            //HubPorts[HubId].PortA = datatoDouble(data: ReceivedData)[0]
-            //hub.Port[0].InputValue = datatoDouble(data: ReceivedData)[0]
-            hub.Port[0].Value[hub.Port[0].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
-        case 0x01:
-            hub.Port[1].Value[hub.Port[1].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
-        case 0x02:
-            hub.Port[2].Value[hub.Port[2].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
-        case 0x03:
-            hub.Port[3].Value[hub.Port[3].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
+            hub.Port[0].ValueForMode[hub.Port[0].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
             
-            /*case 0x01:
-            HubPorts[HubId].PortB = datatoDouble(data: ReceivedData)[0]
+            //print("portA: \(hub.Port[0].ValueForMode[hub.Port[0].Mode].ScalarValue)")
+        case 0x01:
+            hub.Port[1].ValueForMode[hub.Port[1].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
         case 0x02:
-            HubPorts[HubId].PortC = datatoDouble(data: ReceivedData)[0]
+            hub.Port[2].ValueForMode[hub.Port[2].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
         case 0x03:
+            hub.Port[3].ValueForMode[hub.Port[3].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
+            //print("portD: \(hub.Port[3].ValueForMode[hub.Port[3].Mode].ScalarValue)")
+        case 0x04:
+            hub.Port[4].ValueForMode[hub.Port[4].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
+        case 0x05:
+            hub.Port[5].ValueForMode[hub.Port[4].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
+            
+        case 0x63:
+            if(ReceivedData[0]==10){
+                
+                hub.Port[0x63].ValueForMode[hub.Port[0x63].Mode].YawValue=Double(Int16toInt(value: [ReceivedData[4],ReceivedData[5]]))
+                hub.Port[0x63].ValueForMode[hub.Port[0x63].Mode].PitchValue=Double(Int16toInt(value: [ReceivedData[6],ReceivedData[7]]))
+                hub.Port[0x63].ValueForMode[hub.Port[0x63].Mode].RollValue=Double(Int16toInt(value: [ReceivedData[8],ReceivedData[9]]))
+                hub.Port[0x63].ValueForMode[hub.Port[0x63].Mode].invert()
+                //print("pos data: \(hub.Port[0x63].ValueForMode[hub.Port[0x63].Mode].PitchValue)")
+            }else{
+                //print("Unknown Mode 0x63: \(ReceivedData)")
+
+                value = datatoDouble(data: ReceivedData)[0]
+                print("Hub[\(hub.Name)] Port[\(ReceivedData[3])] value: \(value)")
+            }
+            /*case 0x01:
+             HubPorts[HubId].PortB = datatoDouble(data: ReceivedData)[0]
+             case 0x02:
+             HubPorts[HubId].PortC = datatoDouble(data: ReceivedData)[0]
+             case 0x03:
             HubPorts[HubId].PortD = datatoDouble(data: ReceivedData)[0]
         case 0x04:
             HubPorts[HubId].PortE = datatoDouble(data: ReceivedData)[0]
@@ -105,12 +124,13 @@ extension BLEManager{
                 print(ReceivedData)
                 //value = datatoDouble(ReceivedData: ReceivedData)
                 //print("Hub[\(HubId)] Port[\(ReceivedData[3])] value: \(value)")
-            }
-        //print("Att[\(HubId)]=Y:\(HubAtt[HubId].yaw) P:\(HubAtt[HubId].pitch) R:\(HubAtt[HubId].roll)")*/
+             }
+             //print("Att[\(HubId)]=Y:\(HubAtt[HubId].yaw) P:\(HubAtt[HubId].pitch) R:\(HubAtt[HubId].roll)")*/
         default:
-            print(ReceivedData)
+            //print(ReceivedData)
             value = datatoDouble(data: ReceivedData)[0]
             print("Hub[\(hub.Name)] Port[\(ReceivedData[3])] value: \(value)")
+            hub.Port[Int(ReceivedData[3])].ValueForMode[hub.Port[Int(ReceivedData[3])].Mode].ScalarValue = value
         }
     }
 }

@@ -82,10 +82,41 @@ public func DtoInt32(double: Double)->[UInt8]{
     //print("out: \(out)")
     return out
 }
+public func Int16toBitMask(value: [UInt8])->String{
+    
+    var str0 = String( value[0], radix: 16)
+    var str1 = String( value[1], radix: 16)
+    
+    if(Int(str0, radix: 16)!<0x10){
+        str0 = "0"+str0
+    }
+    if(Int(str1, radix: 16)!<0x10){
+        str1 = "0"+str1
+    }
+    print("0:\(str0), 1:\(str1)")
+    
+    //let int = str0 + str1
+    let int = str1 + str0
+    
+    //print("int16toInt: \(int)")
+    
+    let raw : Int = Int(int, radix: 16)!
+    var out : String = String( raw, radix: 2)
+   
+    return out
+}
 
 public func Int16toInt(value: [UInt8])->Int{
-    let str0 = String( value[0], radix: 16)
-    let str1 = String( value[1], radix: 16)
+    
+    var str0 = String( value[0], radix: 16)
+    var str1 = String( value[1], radix: 16)
+    
+    if(Int(str0, radix: 16)!<0x10){
+        str0 = "0"+str0
+    }
+    if(Int(str1, radix: 16)!<0x10){
+        str1 = "0"+str1
+    }
     //print("0:\(str0), 1:\(str1)")
     
     //let int = str0 + str1
@@ -207,7 +238,7 @@ public func datatoDouble(data: [UInt8])->[Double]{
         //memcpy(&value, [data[4]], 8)
         value[0] = Double(data[4])
     case 6:
-        value[0] = Double(Int16toInt(value: [data[5],data[4]]))
+        value[0] = Double(Int16toInt(value: [data[4],data[5]]))
     case 8:
         value[0] = Double(Int32toInt2(value: [data[7],data[6],data[5],data[4]]))
         //memcpy(&value, [data[7],data[6],data[5],data[4]], 4)

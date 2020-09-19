@@ -36,9 +36,11 @@ public class HubConnectionManager{
  }()*/
 public protocol BLEManagerDelegate: class {
     func didConnecttoHub(_ hub: Hub)
+    func didTurnOffHub(_ hub: Hub)
     func didDetatchPort(_ hub: Hub, _ port: HubPort)
     func didAttatchPort(_ hub: Hub)
     func didAttatchVirtualPort(_ hub: Hub)
+    func didReceivePortOutputCommandFeedback(_ hub: Hub, _ port: HubPort, _ Message: UInt8)
 }
 
 public class BLEManager:NSObject{
@@ -55,11 +57,12 @@ public class BLEManager:NSObject{
     //public let Port: PuPort
     
     public func Toggle_On(SwiftView: UIViewController, SwiftSwitch:UISwitch, HubId:Int){
-        self.alert_hub(SwiftView: SwiftView, SwiftSwitch: SwiftSwitch, No: HubId)
-        //self.BLEStatus.No=HubId
-        self.HubNo = HubId
-        //self.ConnectionStatus.No=HubId
-        self.centralManager.scanForPeripherals(withServices: [legohubServiceCBUUID])
+        self.alert_hub(SwiftView: SwiftView, SwiftSwitch: SwiftSwitch, No: HubId){ () -> () in
+            //self.BLEStatus.No=HubId
+            self.HubNo = HubId
+            //self.ConnectionStatus.No=HubId
+            self.centralManager.scanForPeripherals(withServices: [legohubServiceCBUUID])
+        }
     }
     
     public func Toggle_Off(SwiftView: UIViewController, SwiftSwitch:UISwitch, hub:Hub){
@@ -76,7 +79,7 @@ public class BLEManager:NSObject{
         
     }
     
-    public func alert_hub(SwiftView: UIViewController, SwiftSwitch:UISwitch, No:Int) {
+    public func alert_hub(SwiftView: UIViewController, SwiftSwitch:UISwitch, No:Int, Completion:  (() -> Void)?) {
         self.AlertController = UIAlertController(title: "Scanning...", message: "Press button on hub.", preferredStyle: .alert)
         self.AlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:{
             (action: UIAlertAction!) -> Void in
@@ -85,7 +88,11 @@ public class BLEManager:NSObject{
             SwiftSwitch.setOn(false, animated: true)
             self.centralManager.stopScan()
         }))
-        SwiftView.present(self.AlertController, animated: true, completion: nil)
+        SwiftView.present(self.AlertController, animated: true){ () -> () in
+            print("complete")
+            Completion?()
+        }
+        
     }
     
     public func closeAlert() {
@@ -102,7 +109,7 @@ public class BLEManager:NSObject{
     }*/
     public func WriteDataToHub(hub: Hub, data: Data){
         if(hub.isconnected){
-            print("will write")
+            //print("will write")
             hub.Peripheral!.writeValue(data, for: hub.Characteristic!, type: .withResponse)
             //self.BLEStatus.Peripheral[HubId]!.writeValue(data, for: BLEStatus.Characteristic[HubId]!, type: .withResponse)
         }else{
@@ -182,7 +189,7 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
             print("central.state is .poweredOff")
         //self.BTCondition_label.text = String("OFF")
         case .poweredOn:
-            print("central.state is .poweredOn")
+            print("central.state is .poweredOn!")
         //self.BTCondition_label.text = String("ON")
         @unknown default:
             print("unknown deafult")
@@ -293,6 +300,8 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
                     HubAttatchedIo_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x05:
                     GenericErrorMessages_Upstream(hub: self.BLEHub[Hub], data: data)
+                case 0x43:
+                    PortInformation_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x44:
                     PortModeInformation_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 case 0x45:
@@ -300,7 +309,7 @@ extension BLEManager: CBCentralManagerDelegate, CBPeripheralDelegate{
                 case 0x47:
                     PortInputFormat_Upstream(hub:self.BLEHub[Hub], ReceivedData: data)
                 case 0x82:
-                    PortOutputCommandFeedback_Upstream(hub: self.BLEHub[Hub], data: data)
+                    PortOutputCommandFeedback_Upstream(hub: self.BLEHub[Hub], ReceivedData: data)
                 default:
                     print("Unknown Updated value:",data )
                 }

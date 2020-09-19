@@ -14,6 +14,7 @@ public class PortValue: NSObject{
     public var NotificationEnabled: Int = -1
     
     public var ScalarValue: Double = 0
+    public var d_ScalarValue: Double = 0
     
     public var xValue: Double = 0
     public var yValue: Double = 0
@@ -23,13 +24,29 @@ public class PortValue: NSObject{
     public var PitchValue: Double = 0
     public var YawValue: Double = 0
     
+    public var RollValue_Inv: Double = 0
+    
     public init(Id: Int) {
         self.Id = Id
+    }
+    
+    func invert(){
+        if(RollValue>=0){
+            RollValue_Inv=RollValue-180
+        }else{
+            RollValue_Inv=RollValue+180
+        }
     }
 }
 
 
+public protocol HatchManagerDelegate: class {
+    func willSetRange(_ manager: HatchManager)
+    func didSetRange(_ manager: HatchManager)
+}
+
 public class HatchManager: NSObject{
+    public var delegate: HatchManagerDelegate?
     public let blemanager: BLEManager
     public let hub: Hub
     public let PortId: UInt8
@@ -39,8 +56,11 @@ public class HatchManager: NSObject{
     public var range: Double = 0
     
     public var Alert: UIAlertController?
+    //var AlertIsOnScreen: Bool=false
     
     public var maxpower = 0
+    public var Tolerance: Double = 0.05
+    
     var maxSet: Bool = false
     var minSet: Bool = false
     var move : Bool = false
@@ -48,32 +68,57 @@ public class HatchManager: NSObject{
     var value_now: Double = 0
     var value_past: Double = 0
     
-    var SetRangeTimer: Timer?
+    public var SetRangeTimer: Timer?
     var EndTimer: Timer?
     
     var SendValueTimer: Timer?
     public var Value: Double = 0.0
     
-    public func StartTimer(View: UIViewController){
-        print("StartTimer")
-        
+    public func Calibrate(View: UIViewController){
         alert(View: View)
         
         blemanager.PortInputFormatSetup_Single(hub: hub, PortId: PortId, Mode: 0x02, DeltaInterval: 2, NotificationEnabled: 0x01)
         
-        guard SetRangeTimer == nil else { return }
-        self.SetRangeTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(SetRange), userInfo: nil, repeats: true)
+        /*guard SetRangeTimer == nil else {
+            print("SetRangeTimer != nil")
+            return
+        }*/
+        self.SetRangeTimer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(SetRange), userInfo: nil, repeats: true)
+    }
+    
+    //public func Calibrate(View: UIViewController){
+    public func Calibrate(){
+        //alert(View: View)
+        self.delegate?.willSetRange(self)
+        blemanager.PortInputFormatSetup_Single(hub: hub, PortId: PortId, Mode: 0x02, DeltaInterval: 2, NotificationEnabled: 0x01)
+        self.SetRangeTimer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(SetRange), userInfo: nil, repeats: true)
+        
+    }
+    
+    public func ReCalibrate(View: UIViewController){
+        /*if(self.AlertIsOnScreen){
+            print("ISonscreen")
+        }else{
+            self.AlertIsOnScreen=true*/
+            alert(View: View)
+        //}
+        Calibrate()
     }
     
     public func SetIntervalPoints(){
+        //self.range = max - min
         self.range = max - min
+        
         let interval = range/Double(self.intervalpoint.count+1)
         for i in 0 ..< intervalpoint.count {
             intervalpoint[i] = min + interval*Double(i+1)
         }
+        self.max = self.max - (self.range * self.Tolerance)
+        self.min = self.min + (self.range * self.Tolerance)
+        self.range = self.max - self.min
         print("max = \(self.max)")
         print("min = \(self.min)")
-        print("interval[0]= \(self.intervalpoint[0])")
+        //print("interval[0]= \(self.intervalpoint[0])")
     }
     
     
@@ -94,31 +139,39 @@ public class HatchManager: NSObject{
         if(self.maxSet == false && self.move == false){
             //self.move = true
             print("setting MAX...")
-            self.blemanager.PortOutputCommand_StartSpeed(hub: hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Speed: 30, MaxPower: UInt8(self.maxpower), UseProfile: 0x00)
+            self.blemanager.PortOutputCommand_StartSpeed(hub: hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Speed: 50, MaxPower: UInt8(self.maxpower), UseProfile: 0x00)
         }else if(self.minSet == false && self.move == false){
             print("setting MIN...")
             //self.move = true
-            self.blemanager.PortOutputCommand_StartSpeed(hub: hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Speed: -30, MaxPower: UInt8(self.maxpower), UseProfile: 0x00)
+            self.blemanager.PortOutputCommand_StartSpeed(hub: hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Speed: -50, MaxPower: UInt8(self.maxpower), UseProfile: 0x00)
         }else if(self.minSet == true && self.maxSet == true){
             print("Hatch set complete\tMin:\(self.min), Max:\(self.max)")
+
+            //blemanager.PortInputFormatSetup_Single(hub: hub, PortId: PortId, Mode: 0x02, DeltaInterval: 2, NotificationEnabled: 0x00)
+            
             self.SetIntervalPoints()
-            self.blemanager.PortOutputCommand_GotoAbsolutePosition(hub: hub, PortId: PortId, StartupInformation: 0, CompletetionInformation: 0, AbsPos: self.intervalpoint[0], Speed: 100, MaxPower: 100, EndState: 0x7e, UseProfile: 0x00)
+            let middle = (self.max+self.min)/2
+            self.blemanager.PortOutputCommand_GotoAbsolutePosition(hub: hub, PortId: PortId, StartupInformation: 0, CompletetionInformation: 0, AbsPos: middle, Speed: 100, MaxPower: 100, EndState: 0x7e, UseProfile: 0x00)
             
             EndTimer = Timer.scheduledTimer(timeInterval:1, target: self, selector: #selector(StopTimer), userInfo: nil, repeats: false)
-            //EndTimerIsOn = true
-            Alert!.dismiss(animated: true, completion: nil)
+            
+            if((Alert?.isViewLoaded)==true){
+                //self.AlertIsOnScreen=false
+                Alert!.dismiss(animated: true, completion: nil)
+            }
             self.SetRangeTimer!.invalidate()
-            //SendValueTimer = Timer.scheduledTimer(timeInterval:0.2, target: self, selector: #selector(SendValue), userInfo: nil, repeats: true)
+            self.delegate?.didSetRange(self)
         }
         SetRangeRefresher(hub: self.hub, PortId: self.PortId)
     }
     
     @objc func StopTimer(){
+        
         self.blemanager.PortOutputCommand_StartPower(hub: self.hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Power: 0)
     }
     
     public func SetRangeRefresher(hub: Hub, PortId: UInt8){
-        value_now = Double(hub.Port[Int(PortId)].Value[2].ScalarValue)
+        value_now = Double(hub.Port[Int(PortId)].ValueForMode[2].ScalarValue)
         print("value_now= \(value_now)")
         
         if(value_now < value_past && value_now < self.min){
@@ -149,20 +202,28 @@ public class HatchManager: NSObject{
     }
     
     public func Dump(){
-        self.SetRangeTimer!.invalidate()
+        self.SetRangeTimer?.invalidate()
         self.EndTimer?.invalidate()
         self.maxSet = false
         self.minSet = false
         self.move = false
+        self.min=0
+        self.max=0
         self.blemanager.PortOutputCommand_StartPower(hub: self.hub, PortId: self.PortId, StartupInformation: 0b0001, CompletetionInformation: 0, Power: 0)
+        if((Alert?.isViewLoaded)==true){
+            //self.AlertIsOnScreen=false
+            Alert!.dismiss(animated: true, completion: nil)
+        }
     
     }
     
-    public init(blemanager: BLEManager, hub: Hub, PortId: UInt8, intervals: Int, maxpower: Int) {
+    public init(blemanager: BLEManager, hub: Hub, PortId: UInt8, intervals: Int, maxpower: Int, tolerance: Double) {
+        
         self.blemanager = blemanager
         self.hub = hub
         self.PortId = PortId
         self.maxpower = maxpower
+        self.Tolerance = tolerance
         self.intervalpoint = {
             var value = [Double]()
             for _ in 0 ..< intervals {
@@ -170,6 +231,7 @@ public class HatchManager: NSObject{
             }
             return value
         }()
+        super.init()
     }
 }
 
@@ -179,7 +241,7 @@ public class HubPort: NSObject{
     //public var Identifier: String = "WhatIsThis?"
     public var Hardware: PuHardware
     public var Mode: Int = 0
-    public var Value: [PortValue]
+    public var ValueForMode: [PortValue]
     /*public var InformationType: Int = -1
     public var DeltaInterval: Int = -1
     public var NotificationEnabled: Int = -1
@@ -210,7 +272,7 @@ public class HubPort: NSObject{
     public init(Id: Int) {
         self.Id = Id
         self.Hardware = PuHardware.Nil
-        self.Value = {
+        self.ValueForMode = {
             var value = [PortValue]()
             for Mode in 0 ..< 10 {
                 value.append(PortValue(Id: Mode))

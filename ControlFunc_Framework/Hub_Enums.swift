@@ -54,13 +54,15 @@ public enum PuHardware : Int{
     }
 }
 /*
-public enum PuPort : Int{
-    case A = 0x00
-    case B = 0x01
-    case C = 0x02
-    case D = 0x03
-    case E = 0x04
-    case F = 0x05
+public enum PuPort : UInt8{
+    public typealias RawValue = UInt8
     
-}
-*/
+    case PortA = 0x00
+    case PortB = 0x01
+    case PortC = 0x02
+    case PortD = 0x03
+    case PortE = 0x04
+    case PortF = 0x05
+    
+}*/
+

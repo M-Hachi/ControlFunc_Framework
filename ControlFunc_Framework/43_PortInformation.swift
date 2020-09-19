@@ -29,8 +29,9 @@ extension BLEManager{
                 let Port :Int=Int(ReceivedData[3])
                 let Capabilities :Int = Int(ReceivedData[5])
                 let TotalModeCount :Int = Int(ReceivedData[6])
-                let InputModes :Int = Int16toInt(value: [ReceivedData[8], ReceivedData[7]])
-                let OutputModes: Int = Int16toInt(value: [ReceivedData[10], ReceivedData[9]])
+                //let InputModes :Int = Int16toInt(value: [ReceivedData[8], ReceivedData[7]])
+                let InputModes :String = Int16toBitMask(value: [ReceivedData[7], ReceivedData[8]])
+                let OutputModes: String = Int16toBitMask(value: [ReceivedData[9], ReceivedData[10]])
                 print("Port:\(Port), Capabilities:\(Capabilities), TotalModeCount:\(TotalModeCount), InputModes:\(InputModes), OutputModes:\(OutputModes)")
             }else{
                 print("Error: PortInformation")
@@ -40,10 +41,13 @@ extension BLEManager{
             if(ReceivedData[4]==0x02){//POSSIBLE MODE COMBINATIONS
                 let Port :Int=Int(ReceivedData[3])
                 var Modes = [String](repeating: "0000111100001111", count: 8)
-                let Combinations:Int = Int(ReceivedData[0])-5
+                let Combinations:Int = (Int(ReceivedData[0])-5)/2
                 print("Port:\(Port), Combinations:\(Combinations)")
-                for i in 0...Combinations{
-                    Modes[i] = String(Int16toInt(value: [ReceivedData[6+i*2], ReceivedData[5+i*2]]), radix:2)
+                if(Combinations>0){
+                    for i in 1...Combinations{
+                        Modes[i] = String(Int16toInt(value: [ReceivedData[3+i*2], ReceivedData[4+i*2]]), radix:2)
+                        print("Mode[\(i)]=\(Modes[i])")
+                    }
                 }
             }else{
                 print("Error: PortInformation")

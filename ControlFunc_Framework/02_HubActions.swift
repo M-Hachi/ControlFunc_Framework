@@ -18,6 +18,7 @@ extension BLEManager{
         switch ReceivedData[3]{
         case 0x30:
             print("Hub Will Switch Off")
+            self.delegate?.didTurnOffHub(hub)
         case 0x31:
             print("Hub Will Disconnect")
             hub.isconnected = false
