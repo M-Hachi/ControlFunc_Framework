@@ -17,6 +17,7 @@ extension BLEManager{
         let DeltaInterval :Int = Int32toInt(value: [ReceivedData[8],ReceivedData[7],ReceivedData[6],ReceivedData[5]])
         let NotificationEnabled: Int = Int(ReceivedData[9])
         
+        hub.Port[Port].Mode = Int(Mode)
         print("Port:\(Port), Set to Mode:\(Mode), DeltaInterval:\(DeltaInterval), NotificationEnabled:\(NotificationEnabled)")
     }
 }

@@ -141,7 +141,7 @@ public func Int32toInt(value: [UInt8])->Int{
     let str3 = String( value[3], radix: 16)
     var int = "00000000"
      int = str0 + str1  + str2 + str3
-    print("int: \(int)")
+    //print("int: \(int)")
     let raw : Int = Int(int, radix: 16)!
     var out : Int = 0
     if(raw > 4294967295){

@@ -13,6 +13,7 @@ extension BLEManager{
     
     func PortValue_Single(hub:Hub, ReceivedData: [UInt8]){//45
         var value: Double = 0.0
+        
         //print("ReceivedData:\(ReceivedData)")
         switch ReceivedData[3]{//Port
         case 0x00:
@@ -25,7 +26,7 @@ extension BLEManager{
             hub.Port[2].ValueForMode[hub.Port[2].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
         case 0x03:
             hub.Port[3].ValueForMode[hub.Port[3].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
-            //print("portD: \(hub.Port[3].ValueForMode[hub.Port[3].Mode].ScalarValue)")
+            print("portD[\(hub.Port[3].Mode)]: \(hub.Port[3].ValueForMode[hub.Port[3].Mode].ScalarValue)")
         case 0x04:
             hub.Port[4].ValueForMode[hub.Port[4].Mode].ScalarValue = datatoDouble(data: ReceivedData)[0]
         case 0x05:
@@ -132,5 +133,6 @@ extension BLEManager{
             print("Hub[\(hub.Name)] Port[\(ReceivedData[3])] value: \(value)")
             hub.Port[Int(ReceivedData[3])].ValueForMode[hub.Port[Int(ReceivedData[3])].Mode].ScalarValue = value
         }
+        delegate?.didUpdatePortValue(hub, hub.Port[Int(ReceivedData[3])])
     }
 }
