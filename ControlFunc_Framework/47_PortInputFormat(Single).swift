@@ -18,6 +18,6 @@ extension BLEManager{
         let NotificationEnabled: Int = Int(ReceivedData[9])
         
         hub.Port[Port].Mode = Int(Mode)
-        print("Port:\(Port), Set to Mode:\(Mode), DeltaInterval:\(DeltaInterval), NotificationEnabled:\(NotificationEnabled)")
+        print("47, Port:\(Port), Set to Mode:\(Mode), DeltaInterval:\(DeltaInterval), NotificationEnabled:\(NotificationEnabled)")
     }
 }

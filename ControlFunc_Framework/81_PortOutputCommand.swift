@@ -72,6 +72,25 @@ extension BLEManager{//
         self.WriteDataToHub(hub: hub, data: data)
         //legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withoutResponse)
     }
+    public func PortOutputCommand_StartSpeedForTime(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Time:Double, Speed:Double, MaxPower:UInt8, EndState:UInt8, UseProfile:UInt8) {//0x09
+        var bytes : [UInt8]
+        let StartupAndCompletetionInformation: UInt8 = UInt8(StartupInformation*16 + CompletetionInformation)
+        var SpeedOut :Double
+        
+        if(abs(Speed)>100){
+            SpeedOut = 100*Speed/abs(Speed)
+        }else{
+            SpeedOut = Speed
+        }
+        
+        let TimeArray = DtoInt16(double: Time)
+        
+        bytes = [0x09,0x00,0x81,PortId, StartupAndCompletetionInformation,0x09,TimeArray[0], TimeArray[1], DtoUInt8(double: SpeedOut), MaxPower, EndState, UseProfile ]
+        
+        let data = Data(bytes: bytes, count: 12)
+        self.WriteDataToHub(hub: hub, data: data)
+        //legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withoutResponse)
+    }
     
     public func PortOutputCommand_StartSpeedForDegrees(hub: Hub, PortId: UInt8, StartupInformation: Int, CompletetionInformation: Int, Degrees:Double, Speed:Double, MaxPower:UInt8, EndState:UInt8, UseProfile:UInt8) {//0x0B = 11
         var bytes : [UInt8]
@@ -82,7 +101,7 @@ extension BLEManager{//
         let StartupAndCompletetionInformation: UInt8 = UInt8(StartupInformation*16 + CompletetionInformation)
         let AbsPosArray = DtoInt32(double: Degrees)
         print("deg:\(Degrees)")
-        bytes = [0x0e,0x00,0x81,PortId, StartupAndCompletetionInformation,0x0B,AbsPosArray[0],AbsPosArray[1], AbsPosArray[2],AbsPosArray[3],DtoUInt8(double: SPEED),MaxPower, EndState,UseProfile ]
+        bytes = [0x0e,0x00,0x81,PortId, StartupAndCompletetionInformation,0x0B,AbsPosArray[0],AbsPosArray[1], AbsPosArray[2],AbsPosArray[3],DtoUInt8(double: SPEED),MaxPower, EndState, UseProfile ]
         let data = Data(bytes: bytes, count: 14)
         self.WriteDataToHub(hub: hub, data: data)
         //legohub.Peripheral[HubId]?.writeValue(data, for: legohub.Characteristic[HubId]!, type: .withoutResponse)

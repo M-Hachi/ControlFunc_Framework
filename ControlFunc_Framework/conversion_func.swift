@@ -55,7 +55,28 @@ public func DtoUInt8(double: Double)->UInt8{
     }
     return out
 }
-
+public func DtoInt16(double: Double)->[UInt8]{
+    var str = ""
+    var padd = ""
+    var int = "0000"
+    if(double>=0){
+        str = String(Int(double), radix: 16)
+        padd = String(repeating: Character("0"), count: (4 - str.count))//zeroume
+        int = padd + str
+    }else{
+        str = String(65535+Int(double), radix: 16)
+        //padd = String(repeating: Character("F"), count: (8 - str.count))//zeroume
+        int = padd + str
+    }
+    var out :[UInt8]=[0, 0]
+    //change to UInt8 array (litte Endian)
+    out[1] = UInt8((int[int.index(int.startIndex, offsetBy: 0)..<int.index(int.startIndex, offsetBy: 2)]),radix: 16)!
+    //print(out[1])
+    out[0] = UInt8((int[int.index(int.startIndex, offsetBy: 2)..<int.index(int.startIndex, offsetBy: 4)]), radix: 16)!
+    //print(out[0])
+    //print("out: \(out)")
+    return out
+}
 public func DtoInt32(double: Double)->[UInt8]{
     var str = ""
     var padd = ""

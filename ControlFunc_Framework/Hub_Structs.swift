@@ -74,7 +74,7 @@ public class HatchManager: NSObject{
     var SendValueTimer: Timer?
     public var Value: Double = 0.0
     
-    public func Calibrate(View: UIViewController){
+    /*public func Calibrate(View: UIViewController){
         alert(View: View)
         
         blemanager.PortInputFormatSetup_Single(hub: hub, PortId: PortId, Mode: 0x02, DeltaInterval: 2, NotificationEnabled: 0x01)
@@ -84,7 +84,7 @@ public class HatchManager: NSObject{
             return
         }*/
         self.SetRangeTimer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(SetRange), userInfo: nil, repeats: true)
-    }
+    }*/
     
     //public func Calibrate(View: UIViewController){
     public func Calibrate(){
@@ -97,10 +97,10 @@ public class HatchManager: NSObject{
     
     public func ReCalibrate(View: UIViewController){
         /*if(self.AlertIsOnScreen){
-            print("ISonscreen")
-        }else{
-            self.AlertIsOnScreen=true*/
-            alert(View: View)
+         print("ISonscreen")
+         }else{
+         self.AlertIsOnScreen=true*/
+        alert(View: View)
         //}
         Calibrate()
     }
