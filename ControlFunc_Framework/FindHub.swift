@@ -37,8 +37,9 @@ public class HubConnectionManager{
 public protocol BLEManagerDelegate: class {
     func didConnecttoHub(_ hub: Hub)
     func didTurnOffHub(_ hub: Hub)
+    func didDisconnectHub(_ hub: Hub)
     func didDetatchPort(_ hub: Hub, _ port: HubPort)
-    func didAttatchPort(_ hub: Hub)
+    func didAttatchPort(_ hub: Hub, _ port: HubPort)
     func didAttatchVirtualPort(_ hub: Hub)
     func didUpdatePortValue(_ hub: Hub, _ port: HubPort)
     func didReceivePortOutputCommandFeedback(_ hub: Hub, _ port: HubPort, _ Message: UInt8)
@@ -51,6 +52,7 @@ public class BLEManager:NSObject{
     public var AlertController: UIAlertController!
     
     public var delegate: BLEManagerDelegate?
+    public var toggledelegate: HubToggleDelegate?
     public var BLEHub: [Hub]
     
     var HubNo: Int = -1

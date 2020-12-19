@@ -40,201 +40,6 @@ public class PortValue: NSObject{
 }
 
 
-public protocol HatchManagerDelegate: class {
-    func willSetRange(_ manager: HatchManager)
-    func didSetRange(_ manager: HatchManager)
-}
-
-public class HatchManager: NSObject{
-    public var delegate: HatchManagerDelegate?
-    public let blemanager: BLEManager
-    public let hub: Hub
-    public let PortId: UInt8
-    public var intervalpoint: [Double]
-    public var max: Double = 0
-    public var min: Double = 0
-    public var range: Double = 0
-    
-    public var Alert: UIAlertController?
-    //var AlertIsOnScreen: Bool=false
-    
-    public var maxpower = 0
-    public var Tolerance: Double = 0.05
-    
-    var maxSet: Bool = false
-    var minSet: Bool = false
-    var move : Bool = false
-    
-    var value_now: Double = 0
-    var value_past: Double = 0
-    
-    public var SetRangeTimer: Timer?
-    var EndTimer: Timer?
-    
-    var SendValueTimer: Timer?
-    public var Value: Double = 0.0
-    
-    /*public func Calibrate(View: UIViewController){
-        alert(View: View)
-        
-        blemanager.PortInputFormatSetup_Single(hub: hub, PortId: PortId, Mode: 0x02, DeltaInterval: 2, NotificationEnabled: 0x01)
-        
-        /*guard SetRangeTimer == nil else {
-            print("SetRangeTimer != nil")
-            return
-        }*/
-        self.SetRangeTimer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(SetRange), userInfo: nil, repeats: true)
-    }*/
-    
-    //public func Calibrate(View: UIViewController){
-    public func Calibrate(){
-        //alert(View: View)
-        self.delegate?.willSetRange(self)
-        blemanager.PortInputFormatSetup_Single(hub: hub, PortId: PortId, Mode: 0x02, DeltaInterval: 2, NotificationEnabled: 0x01)
-        self.SetRangeTimer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(SetRange), userInfo: nil, repeats: true)
-        
-    }
-    
-    public func ReCalibrate(View: UIViewController){
-        /*if(self.AlertIsOnScreen){
-         print("ISonscreen")
-         }else{
-         self.AlertIsOnScreen=true*/
-        alert(View: View)
-        //}
-        Calibrate()
-    }
-    
-    public func SetIntervalPoints(){
-        //self.range = max - min
-        self.range = max - min
-        
-        let interval = range/Double(self.intervalpoint.count+1)
-        for i in 0 ..< intervalpoint.count {
-            intervalpoint[i] = min + interval*Double(i+1)
-        }
-        self.max = self.max - (self.range * self.Tolerance)
-        self.min = self.min + (self.range * self.Tolerance)
-        self.range = self.max - self.min
-        print("max = \(self.max)")
-        print("min = \(self.min)")
-        //print("interval[0]= \(self.intervalpoint[0])")
-    }
-    
-    
-    func alert(View: UIViewController){
-        self.Alert = UIAlertController(title: "Servo Motor", message: "Setting Range...", preferredStyle: .alert)
-        self.Alert!.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:{
-            (action: UIAlertAction!) -> Void in
-            self.Dump()
-        }))
-        
-        View.present(Alert!, animated: true, completion: nil)
-
-    }
-    
-    @objc func SetRange(){
-        print("setrange")
-        
-        if(self.maxSet == false && self.move == false){
-            //self.move = true
-            print("setting MAX...")
-            self.blemanager.PortOutputCommand_StartSpeed(hub: hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Speed: 50, MaxPower: UInt8(self.maxpower), UseProfile: 0x00)
-        }else if(self.minSet == false && self.move == false){
-            print("setting MIN...")
-            //self.move = true
-            self.blemanager.PortOutputCommand_StartSpeed(hub: hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Speed: -50, MaxPower: UInt8(self.maxpower), UseProfile: 0x00)
-        }else if(self.minSet == true && self.maxSet == true){
-            print("Hatch set complete\tMin:\(self.min), Max:\(self.max)")
-
-            //blemanager.PortInputFormatSetup_Single(hub: hub, PortId: PortId, Mode: 0x02, DeltaInterval: 2, NotificationEnabled: 0x00)
-            
-            self.SetIntervalPoints()
-            let middle = (self.max+self.min)/2
-            self.blemanager.PortOutputCommand_GotoAbsolutePosition(hub: hub, PortId: PortId, StartupInformation: 0, CompletetionInformation: 0, AbsPos: middle, Speed: 100, MaxPower: 100, EndState: 0x7e, UseProfile: 0x00)
-            
-            EndTimer = Timer.scheduledTimer(timeInterval:1, target: self, selector: #selector(StopTimer), userInfo: nil, repeats: false)
-            
-            if((Alert?.isViewLoaded)==true){
-                //self.AlertIsOnScreen=false
-                Alert!.dismiss(animated: true, completion: nil)
-            }
-            self.SetRangeTimer!.invalidate()
-            self.delegate?.didSetRange(self)
-        }
-        SetRangeRefresher(hub: self.hub, PortId: self.PortId)
-    }
-    
-    @objc func StopTimer(){
-        
-        self.blemanager.PortOutputCommand_StartPower(hub: self.hub, PortId: self.PortId, StartupInformation: 0, CompletetionInformation: 0, Power: 0)
-    }
-    
-    public func SetRangeRefresher(hub: Hub, PortId: UInt8){
-        value_now = Double(hub.Port[Int(PortId)].ValueForMode[2].ScalarValue)
-        print("value_now= \(value_now)")
-        
-        if(value_now < value_past && value_now < self.min){
-            print("update min")
-            self.min = value_now
-            self.move=true
-        }else if(value_now > value_past && value_now > self.max){
-            print("update max")
-            self.max = value_now
-            self.move=true
-        //}else if(abs(value_past-value_now)<2 && abs(value_now-self.min)<2 && self.move==true){
-        }else if(value_now-value_past > -2 && abs(value_now-self.min)<2 && self.move==true){
-            print("minset = true")
-            self.minSet = true
-            self.move = false
-        }else if(abs(value_past-value_now)<2 && abs(value_now-self.max)<2 && self.move==true){
-            print("maxset = true")
-            self.maxSet = true
-            self.move = false
-        }
-        value_past=value_now
-    }
-    
-    @objc func SendValue(){
-        print("Value = \(Value)")
-        blemanager.PortOutputCommand_GotoAbsolutePosition(hub: self.hub, PortId: 2, StartupInformation: 0b0001, CompletetionInformation: 0, AbsPos: Value, Speed: 70, MaxPower: 100, EndState: 0x7e, UseProfile: 0x11)
-        
-    }
-    
-    public func Dump(){
-        self.SetRangeTimer?.invalidate()
-        self.EndTimer?.invalidate()
-        self.maxSet = false
-        self.minSet = false
-        self.move = false
-        self.min=0
-        self.max=0
-        self.blemanager.PortOutputCommand_StartPower(hub: self.hub, PortId: self.PortId, StartupInformation: 0b0001, CompletetionInformation: 0, Power: 0)
-        if((Alert?.isViewLoaded)==true){
-            //self.AlertIsOnScreen=false
-            Alert!.dismiss(animated: true, completion: nil)
-        }
-    
-    }
-    
-    public init(blemanager: BLEManager, hub: Hub, PortId: UInt8, intervals: Int, maxpower: Int, tolerance: Double) {
-        
-        self.blemanager = blemanager
-        self.hub = hub
-        self.PortId = PortId
-        self.maxpower = maxpower
-        self.Tolerance = tolerance
-        self.intervalpoint = {
-            var value = [Double]()
-            for _ in 0 ..< intervals {
-                value.append(0.00)
-            }
-            return value
-        }()
-        super.init()
-    }
-}
-
 public class HubPort: NSObject{
     public var Id: Int = 0
     public var Name: String = "PortNameUnknown"
@@ -243,18 +48,18 @@ public class HubPort: NSObject{
     public var Mode: Int = 0
     public var ValueForMode: [PortValue]
     /*public var InformationType: Int = -1
-    public var DeltaInterval: Int = -1
-    public var NotificationEnabled: Int = -1
-    public var InputValue: Double = 0
-    //public var OutputValue: Double = 0
-    
-    public var xValue: Double = 0
-    public var yValue: Double = 0
-    public var zValue: Double = 0
-    
-    public var RollValue: Double = 0
-    public var PitchValue: Double = 0
-    public var YawValue: Double = 0*/
+     public var DeltaInterval: Int = -1
+     public var NotificationEnabled: Int = -1
+     public var InputValue: Double = 0
+     //public var OutputValue: Double = 0
+     
+     public var xValue: Double = 0
+     public var yValue: Double = 0
+     public var zValue: Double = 0
+     
+     public var RollValue: Double = 0
+     public var PitchValue: Double = 0
+     public var YawValue: Double = 0*/
     
     func DetatchedIo(){
         self.Hardware=PuHardware.Nil
@@ -262,12 +67,12 @@ public class HubPort: NSObject{
     
     
     func AttatchedIo(IoTypeId:Int, HardwareRevision:Int, SoftwareRevision:Int){
-        print("port[\(self.Id)]: attatched \(IoTypeId)!")
+        print("port[\(self.Id)]: attatched IOtype\(IoTypeId)")
         self.Hardware=PuHardware.init(rawValue: IoTypeId) ?? PuHardware.init(rawValue: -1)!
     }
     
     func AttatchedVirtualIo(IoTypeId:Int, PortIdA:Int, PortIdB:Int){
-            print("Port\(PortIdA) and Port\(PortIdA) forms Vport")
+        print("Port\(PortIdA) and Port\(PortIdA) forms Vport")
     }
     public init(Id: Int) {
         self.Id = Id
@@ -305,7 +110,6 @@ public class Hub: NSObject{//portの情報などを保持する
     public var manufacturerdata = ManufacturerData()
     public var Identifier : UUID?
     public var isconnected: Bool = false
-    //public var manufacturerdata = ManufacturerData()
     
     public var Device: String = "device"
     public var Port : [HubPort]//(repeating: Port(Hardware: PuHardware.Nil), count: 256)
@@ -331,23 +135,33 @@ public class Hub: NSObject{//portの情報などを保持する
         //self.HubPort[0].Name = "PortA"
         self.gyro = self.Port[63]
     }
+    
+    public func Dump(){
+        self.Port = {
+            var Port = [HubPort]()
+            for i in 0 ..< 256 {
+                Port.append(HubPort(Id: i))
+            }
+            return Port
+        }()
+    }
 }
 
 //var DriveHub = [Attitude].self
 /*struct Attitude{
-    var yaw: Int = 0
-    var roll: Int = 0
-    var pitch: Int = 0
-    var yaw_cal: Int = 0
-    var roll_cal: Int = 0
-    var pitch_cal: Int = 0
-    
-    var yaw_inv: Int = 0
-    var roll_inv: Int = 0
-    
-    var yaw_slider: Int = 0
-    var yaw1: Int = 0
-}*/
+ var yaw: Int = 0
+ var roll: Int = 0
+ var pitch: Int = 0
+ var yaw_cal: Int = 0
+ var roll_cal: Int = 0
+ var pitch_cal: Int = 0
+ 
+ var yaw_inv: Int = 0
+ var roll_inv: Int = 0
+ 
+ var yaw_slider: Int = 0
+ var yaw1: Int = 0
+ }*/
 class Attitude{
     var yaw: Int = 0
     var roll: Int = 0
@@ -388,71 +202,71 @@ class Attitude{
 var HubAtt = [Attitude](repeating: Attitude() , count: 10)
 //var HubAtt = [Attitude](repeating: Attitude(yaw: 0, roll:0, pitch:0, yaw_cal:0, roll_cal:0, pitch_cal:0, yaw_slider:0, yaw1: 0) , count: 10)
 /*
-public struct AttatchedHW{
-    
-    public var PortA: PuHardware
-    public var PortB: PuHardware
-    public var PortC: PuHardware
-    public var PortD: PuHardware
-    public var PortE: PuHardware
-    public var PortF: PuHardware
-    
-    mutating func DetatchedIo(Port:Int){
-        switch Port {
-        case 0:
-            self.PortA=PuHardware.Nil
-        case 1:
-            self.PortB=PuHardware.Nil
-        case 2:
-            self.PortC=PuHardware.Nil
-        case 3:
-            self.PortD=PuHardware.Nil
-        case 4:
-            self.PortE=PuHardware.Nil
-        case 5:
-            self.PortF=PuHardware.Nil
-        default:
-            print("Error in Port=\(Port)")
-        }
-    }
-    
-    mutating func AttatchedIo(Port:Int, IoTypeId:Int, HardwareRevision:Int, SoftwareRevision:Int){
-        switch Port {
-        case 0:
-            self.PortA=PuHardware.init(rawValue: IoTypeId)!
-        case 1:
-            self.PortB=PuHardware.init(rawValue: IoTypeId)!
-        case 2:
-            self.PortC=PuHardware.init(rawValue: IoTypeId)!
-        case 3:
-            self.PortD=PuHardware.init(rawValue: IoTypeId)!
-        case 4:
-            self.PortE=PuHardware.init(rawValue: IoTypeId)!
-        case 5:
-            self.PortF=PuHardware.init(rawValue: IoTypeId)!
-        default:
-            print("Error in Port=\(Port)")
-        }
-    }
-    
-    mutating func AttatchedVirtualIo(Port:Int, IoTypeId:Int, PortIdA:Int, PortIdB:Int){
-            print("Port\(PortIdA) and Port\(PortIdA) forms Vport\(Port)")
-    }
-}*/
+ public struct AttatchedHW{
+ 
+ public var PortA: PuHardware
+ public var PortB: PuHardware
+ public var PortC: PuHardware
+ public var PortD: PuHardware
+ public var PortE: PuHardware
+ public var PortF: PuHardware
+ 
+ mutating func DetatchedIo(Port:Int){
+ switch Port {
+ case 0:
+ self.PortA=PuHardware.Nil
+ case 1:
+ self.PortB=PuHardware.Nil
+ case 2:
+ self.PortC=PuHardware.Nil
+ case 3:
+ self.PortD=PuHardware.Nil
+ case 4:
+ self.PortE=PuHardware.Nil
+ case 5:
+ self.PortF=PuHardware.Nil
+ default:
+ print("Error in Port=\(Port)")
+ }
+ }
+ 
+ mutating func AttatchedIo(Port:Int, IoTypeId:Int, HardwareRevision:Int, SoftwareRevision:Int){
+ switch Port {
+ case 0:
+ self.PortA=PuHardware.init(rawValue: IoTypeId)!
+ case 1:
+ self.PortB=PuHardware.init(rawValue: IoTypeId)!
+ case 2:
+ self.PortC=PuHardware.init(rawValue: IoTypeId)!
+ case 3:
+ self.PortD=PuHardware.init(rawValue: IoTypeId)!
+ case 4:
+ self.PortE=PuHardware.init(rawValue: IoTypeId)!
+ case 5:
+ self.PortF=PuHardware.init(rawValue: IoTypeId)!
+ default:
+ print("Error in Port=\(Port)")
+ }
+ }
+ 
+ mutating func AttatchedVirtualIo(Port:Int, IoTypeId:Int, PortIdA:Int, PortIdB:Int){
+ print("Port\(PortIdA) and Port\(PortIdA) forms Vport\(Port)")
+ }
+ }*/
 
 //var HubHW = [AttatchedHW](repeating: AttatchedHW(PortA: PuHardware.Nil, PortB:PuHardware.Nil, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
-    //var HubHW = [AttatchedHW](repeating: AttatchedHW(PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
+//var HubHW = [AttatchedHW](repeating: AttatchedHW(PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
 /*
-struct PortValue{
-    var PortA: Double
-    var PortB: Double
-    var PortC: Double
-    var PortD: Double
-    var PortE: Double
-    var PortF: Double
-}
-var HubPorts = [PortValue](repeating: PortValue(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
-*/
+ struct PortValue{
+ var PortA: Double
+ var PortB: Double
+ var PortC: Double
+ var PortD: Double
+ var PortE: Double
+ var PortF: Double
+ }
+ var HubPorts = [PortValue](repeating: PortValue(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0), count: 10)
+ */
 
 struct PortTimer{
     var PortA = Timer()
@@ -475,26 +289,26 @@ struct DegreesCal{//最大値・最小値・零点設定用
     var Move: Bool
 }
 /*
-struct ArmHub{
-    static var hatch = [Double](repeating: 0, count: 100)//PortA
-    static var hatchCal = DegreesCal(Max: 0, Min: 0, Zero: 0, MaxSet: false, MinSet: false, ZeroSet: false, Move: false)
-    
-    static var Elbow : Int = 0
-    static var Elbow_cal : Int = 0
-    
-    static var Ports = PortValue(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0)
-    static var Ports_dt = PortValue(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0)
-    
-    static var Mode : Int = 0
-    static var Attatchment : Int = 0
-    //static var GestureRecognition:Bool = false
-    static var Gesture :Int = 0
-    static var GestureLog = [Int](repeating: 0, count: 3)
-    static var Gesture_Timer = Timer()
-    static var Gesture_IntervalTimer = Timer()
-    static var Gesture_Error=[Double](repeating: 0.0, count: 5)
-    static var Gesture_Error_min:Double=0.0
-    static var Gesture_Tolerance=[Double](repeating: 0.5, count: 5)
-    static var userDefaults = UserDefaults.standard
-}
-*/
+ struct ArmHub{
+ static var hatch = [Double](repeating: 0, count: 100)//PortA
+ static var hatchCal = DegreesCal(Max: 0, Min: 0, Zero: 0, MaxSet: false, MinSet: false, ZeroSet: false, Move: false)
+ 
+ static var Elbow : Int = 0
+ static var Elbow_cal : Int = 0
+ 
+ static var Ports = PortValue(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0)
+ static var Ports_dt = PortValue(PortA: 0, PortB: 0, PortC: 0, PortD: 0, PortE: 0, PortF: 0)
+ 
+ static var Mode : Int = 0
+ static var Attatchment : Int = 0
+ //static var GestureRecognition:Bool = false
+ static var Gesture :Int = 0
+ static var GestureLog = [Int](repeating: 0, count: 3)
+ static var Gesture_Timer = Timer()
+ static var Gesture_IntervalTimer = Timer()
+ static var Gesture_Error=[Double](repeating: 0.0, count: 5)
+ static var Gesture_Error_min:Double=0.0
+ static var Gesture_Tolerance=[Double](repeating: 0.5, count: 5)
+ static var userDefaults = UserDefaults.standard
+ }
+ */

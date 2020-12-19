@@ -19,8 +19,12 @@ extension BLEManager{
         case 0x30:
             print("Hub Will Switch Off")
             self.delegate?.didTurnOffHub(hub)
+            self.toggledelegate?.didTurnOffHub(hub)
+            hub.isconnected = false
         case 0x31:
             print("Hub Will Disconnect")
+            self.delegate?.didDisconnectHub(hub)
+            self.toggledelegate?.didDisconnectHub(hub)
             hub.isconnected = false
         case 0x32:
             print("Hub Will Go Into Boot Mode")
@@ -28,4 +32,8 @@ extension BLEManager{
             print("Unknown Property:", ReceivedData[3] )
         }
     }
+}
+public protocol HubToggleDelegate: class {
+    func didTurnOffHub(_ hub: Hub)
+    func didDisconnectHub(_ hub: Hub)
 }

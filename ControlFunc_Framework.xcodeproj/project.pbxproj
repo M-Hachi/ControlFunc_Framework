@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E3FFEA7258DA81F00245BDB /* ServoFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3FFEA6258DA81F00245BDB /* ServoFunc.swift */; };
 		4E70DECE24F93660003C3BBB /* CustomFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E70DECD24F93660003C3BBB /* CustomFunc.swift */; };
 		4EA6771224558B990034F9DC /* 04_HubAttatchedIo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA6771124558B990034F9DC /* 04_HubAttatchedIo.swift */; };
 		4EA6771424558BCE0034F9DC /* 21_PortInformationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA6771324558BCE0034F9DC /* 21_PortInformationRequest.swift */; };
@@ -35,6 +36,7 @@
 
 /* Begin PBXFileReference section */
 		4E2298EF246456820073B7E2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		4E3FFEA6258DA81F00245BDB /* ServoFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServoFunc.swift; sourceTree = "<group>"; };
 		4E70DECD24F93660003C3BBB /* CustomFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFunc.swift; sourceTree = "<group>"; };
 		4EA6771124558B990034F9DC /* 04_HubAttatchedIo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = 04_HubAttatchedIo.swift; sourceTree = "<group>"; };
 		4EA6771324558BCE0034F9DC /* 21_PortInformationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = 21_PortInformationRequest.swift; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 			children = (
 				4EBA80A824540BAA00FC95C4 /* FindHub.swift */,
 				4EBA80C424540F7C00FC95C4 /* Hub_Structs.swift */,
+				4E3FFEA6258DA81F00245BDB /* ServoFunc.swift */,
 				4EE185472461668F0074B63B /* Hub_Enums.swift */,
 				4EBA808E2454016000FC95C4 /* conversion_func.swift */,
 				4E70DECD24F93660003C3BBB /* CustomFunc.swift */,
@@ -208,6 +211,7 @@
 				4E70DECE24F93660003C3BBB /* CustomFunc.swift in Sources */,
 				4EA6771C24558C790034F9DC /* 81_PortOutputCommand.swift in Sources */,
 				4EBA80B724540DEB00FC95C4 /* 81_WriteDirectModeData.swift in Sources */,
+				4E3FFEA7258DA81F00245BDB /* ServoFunc.swift in Sources */,
 				4EBA80C524540F7C00FC95C4 /* Hub_Structs.swift in Sources */,
 				4EBA80A924540BAA00FC95C4 /* FindHub.swift in Sources */,
 				4EBA80B924540E2700FC95C4 /* 22_PortModeInformationRequest.swift in Sources */,

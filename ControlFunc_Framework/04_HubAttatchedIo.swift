@@ -7,7 +7,6 @@
 //import CoreBluetooth
 
 extension BLEManager{
-    
     public func HubAttatchedIo_Upstream(hub: Hub, ReceivedData: [UInt8]){//01
         switch ReceivedData[0] {
         case 5:     //Detatched Io
@@ -29,7 +28,7 @@ extension BLEManager{
                 //HubHW[HubId].AttatchedIo(Port: Int(ReceivedData[3]), IoTypeId: Int16toInt(value: [ReceivedData[5], ReceivedData[6]]), HardwareRevision: 0, SoftwareRevision: 0)
                 hub.Port[Int(ReceivedData[3])].AttatchedIo(IoTypeId: Int16toInt(value: [ReceivedData[5], ReceivedData[6]]), HardwareRevision: 0, SoftwareRevision: 0)
                 print("Hub[\(hub.id)].HubPort[\(Int(ReceivedData[3]))]  = \(hub.Port[Int(ReceivedData[3])].Hardware.Name())")
-                self.delegate?.didAttatchPort(hub)
+                self.delegate?.didAttatchPort(hub, hub.Port[Int(ReceivedData[3])])
             }else{
                 print("Error: HubAttatchedIo")
             }

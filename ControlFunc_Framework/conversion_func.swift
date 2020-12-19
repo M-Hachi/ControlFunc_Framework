@@ -257,7 +257,9 @@ public func datatoDouble(data: [UInt8])->[Double]{
     switch data[0] {
     case 5:
         //memcpy(&value, [data[4]], 8)
-        value[0] = Double(data[4])
+        //for mode1(speed)
+        value[0] = Double(UInt8toInt(value: data[4]))
+        //value[0] = Double(data[4])
     case 6:
         value[0] = Double(Int16toInt(value: [data[4],data[5]]))
     case 8:
